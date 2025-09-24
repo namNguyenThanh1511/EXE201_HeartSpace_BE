@@ -1,11 +1,8 @@
-﻿/*
- top-level statements (câu lệnh cấp cao nhất), một tính năng của C# 6.0 trở lên. 
- Tính năng này cho phép viết code trực tiếp ở root của file mà không cần bọc trong namespace hay class Main.
- */
-
-using HeartSpace.Api.Extensions;
+﻿using HeartSpace.Api.Extensions;
 using HeartSpace.Domain.Entities;
+using HeartSpace.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -36,11 +33,23 @@ builder.Services.ConfigureCors();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline. 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsEnvironment("LocalDocker"))
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //migrarte pending 
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
+        //db.Database.EnsureCreated();
+        if (db.Database.GetPendingMigrations().Any()) //only migrate if there are any new migrate file
+        {
+            db.Database.Migrate();
+        }
+    }
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();

@@ -23,7 +23,8 @@ namespace HeartSpace.Domain.Entities
         public enum Role
         {
             Admin = 1,
-            User = 2
+            Client = 2,
+            Consultant = 3
         }
 
         // Navigation property - NOT a database column
