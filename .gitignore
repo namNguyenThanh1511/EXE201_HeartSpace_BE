@@ -1,0 +1,47 @@
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.bak
+*.ncb
+*.opensdf
+*.sdf
+*.vshost.exe
+*.vshost.exe.config
+*.vshost.exe.manifest
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.ilk
+*.meta
+*.log
+*.obj
+*.exe
+*.dll
+*.cache
+*.tlb
+*.tlh
+*.tmp
+*.csproj.user
+*.resharper
+*.dotSettings
+
+# NuGet packages
+packages/
+*.nupkg
+project.lock.json
+
+# Rider files
+.idea/
+
+# Other common files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Source control files
+.gitattributes

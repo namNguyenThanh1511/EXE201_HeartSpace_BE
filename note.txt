@@ -1,0 +1,20 @@
+
+***Controller Layer : 
+-Install-Package Microsoft.EntityFrameworkCore.Design
+để thao tác với EFCore tại thời điểm thiết kế (design time)
+Hỗ trợ tạo instance DbContext khi chạy các lệnh EF tại design-time
+
+***Infrastructure Layer :
+-Install-Package Microsoft.EntityFrameworkCore.Tools( cần thêm vào project chứa DBContext
+ Đây là gói bắt buộc nếu muốn sử dụng dotnet ef hoặc Add-Migration từ Visual Studio.
+
+-Install-Package Microsoft.EntityFrameworkCore
+	=>EF Core cần khởi tạo một DbContext nhưng chưa chạy ứng dụng thật sự (design time ).
+	Microsoft.EntityFrameworkCore.Design: giúp tạo DbContext, scaffold code.
+
+-Install-Package Npgsql.EntityFrameworkCore.PostgreSQL
+ package này cho phép sử dụng PostgreSQL với EFCore
+ 
+-Install-Package Npgsql.EntityFrameworkCore.PostgreSQL.Design
+ package này cho phép sử dụng PostgreSQL với EFCore tại thời điểm thiết kế (design time)
+
