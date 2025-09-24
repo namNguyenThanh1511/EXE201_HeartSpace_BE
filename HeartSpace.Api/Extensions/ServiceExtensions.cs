@@ -40,9 +40,9 @@ namespace HeartSpace.Api.Extensions
         }
         public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            Console.WriteLine(configuration.GetConnectionString("DbString"));
+            Console.WriteLine(configuration.GetConnectionString("HeartSpaceDb"));
             services.AddDbContext<RepositoryContext>(options =>
-                                                     options.UseNpgsql(configuration.GetConnectionString("DbString")));
+                                                     options.UseSqlServer(configuration.GetConnectionString("HeartSpaceDb")));
 
         }
         public static void ConfigureCors(this IServiceCollection services) => services.AddCors(options =>
