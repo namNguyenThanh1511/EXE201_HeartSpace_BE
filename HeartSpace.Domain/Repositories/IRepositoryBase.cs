@@ -16,7 +16,7 @@ namespace HeartSpace.Domain.Repositories
         Task<T?> GetByIdAsync(object id);
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> expression);
         Task<bool> ExistsAsync(Expression<Func<T, bool>> expression);
-        Task AddAsync(T entity);
+        Task<T> AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
     }

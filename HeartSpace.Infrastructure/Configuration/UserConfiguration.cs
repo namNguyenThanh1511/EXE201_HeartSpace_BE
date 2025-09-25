@@ -40,11 +40,37 @@ namespace HeartSpace.Infrastructure.Configuration
             builder.Property(u => u.UserRole)
                 .HasConversion<string>()
                 .IsRequired();
+            builder.Property(u => u.Gender);
             builder.Property(u => u.IsActive)
                 .IsRequired();
             builder.Property(u => u.CreatedAt)
                 .IsRequired();
             builder.Property(u => u.UpdatedAt);
+            // Quan hệ 1-n: User (Client) - Appointments
+            builder.HasMany(u => u.ClientAppointments)
+                .WithOne(a => a.Client)
+                .HasForeignKey(a => a.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+            // Quan hệ 1-n: User (Consultant) - Appointments
+            builder.HasMany(u => u.ConsultantAppointments)
+                .WithOne(a => a.Consultant)
+                .HasForeignKey(a => a.ConsultantId)
+                .OnDelete(DeleteBehavior.Restrict);
+            // Quan hệ 1-n: User (Consultant) - Schedules
+            builder.HasMany(u => u.ConsultantSchedules)
+                .WithOne(s => s.Consultant)
+                .HasForeignKey(s => s.ConsultantId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Quan hệ 1-1: User - ClientProfile
+            builder.HasOne(u => u.ClientProfile)
+                .WithOne(cp => cp.Client)
+                .HasForeignKey<ClientProfile>(cp => cp.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Quan hệ 1-1: User - ConsultantProfile
+            builder.HasOne(u => u.ConsultantProfile)
+                .WithOne(cp => cp.Consultant)
+                .HasForeignKey<ConsultantProfile>(cp => cp.ConsultantId)
+                .OnDelete(DeleteBehavior.Cascade);
             //builder.Property(u => u.IsEmailConfirmed)
             //    .IsRequired();
             //builder.Property(u => u.EmailConfirmationToken)

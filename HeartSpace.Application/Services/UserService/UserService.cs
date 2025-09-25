@@ -68,8 +68,6 @@ namespace HeartSpace.Application.Services.UserService
 
         public async Task<bool> UpdateUserProfileAsync(Guid userId, UserProfileUpdateDto request)
         {
-
-            // Get existing user
             var existingUser = await _unitOfWork.Users.GetByIdAsync(userId);
             if (existingUser == null)
             {
@@ -81,46 +79,71 @@ namespace HeartSpace.Application.Services.UserService
                 throw new UserInactiveException("Cannot update inactive user profile");
             }
 
-            // Check if email is being changed and if it's already in use
-            if (!string.Equals(existingUser.Email, request.Email, StringComparison.OrdinalIgnoreCase))
+            // Email
+            if (!string.IsNullOrWhiteSpace(request.Email) &&
+                !string.Equals(existingUser.Email, request.Email, StringComparison.OrdinalIgnoreCase))
             {
-                var userEmailExists = await FindUserByEmailAsync(request.Email);
+                var userEmailExists = await _unitOfWork.Users.GetUserByEmailAsync(request.Email);
                 if (userEmailExists != null)
                 {
                     throw new BusinessRuleViolationException($"Email {request.Email} is already in use");
                 }
+
+                existingUser.Email = request.Email.Trim().ToLowerInvariant();
             }
 
-            // Validate age (example: minimum 13 years old)
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var age = today.Year - request.DateOfBirth.Year;
-            if (request.DateOfBirth > today.AddYears(-age)) age--;
+            // Phone
+            if (!string.IsNullOrWhiteSpace(request.PhoneNumber) &&
+                !string.Equals(existingUser.PhoneNumber, request.PhoneNumber, StringComparison.OrdinalIgnoreCase))
+            {
+                var userPhoneExists = await _unitOfWork.Users.GetUserByPhoneNumberAsync(request.PhoneNumber);
+                if (userPhoneExists != null)
+                {
+                    throw new BusinessRuleViolationException($"Phone number {request.PhoneNumber} is already in use");
+                }
 
-            //if (age < 13)
-            //{
-            //    throw new BusinessRuleViolationException("User must be at least 13 years old");
-            //}
+                existingUser.PhoneNumber = request.PhoneNumber.Trim();
+            }
 
-            //if (age > 120)
-            //{
-            //    throw new BusinessRuleViolationException("Invalid date of birth");
-            //}
-            // Update user properties
-            existingUser.FullName = request.FullName.Trim();
-            existingUser.Email = request.Email.Trim().ToLowerInvariant();
-            existingUser.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber)
-                ? null
-                : request.PhoneNumber.Trim();
-            existingUser.DateOfBirth = request.DateOfBirth;
-            existingUser.Identifier = string.IsNullOrWhiteSpace(request.Identifier)
-                ? existingUser.Identifier
-                : request.Identifier.Trim();
-            existingUser.Avatar = string.IsNullOrWhiteSpace(request.Avatar)
-                ? null
-                : request.Avatar.Trim();
+            // FullName
+            if (!string.IsNullOrWhiteSpace(request.FullName))
+            {
+                existingUser.FullName = request.FullName.Trim();
+            }
+
+            // DateOfBirth
+            if (request.DateOfBirth.HasValue)
+            {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+                var age = today.Year - request.DateOfBirth.Value.Year;
+                if (request.DateOfBirth > today.AddYears(-age)) age--;
+
+                // if (age < 13 || age > 120)
+                //     throw new BusinessRuleViolationException("Invalid age");
+
+                existingUser.DateOfBirth = request.DateOfBirth.Value;
+            }
+
+            // Identifier
+            if (!string.IsNullOrWhiteSpace(request.Identifier))
+            {
+                existingUser.Identifier = request.Identifier.Trim();
+            }
+
+            // Avatar
+            if (!string.IsNullOrWhiteSpace(request.Avatar))
+            {
+                existingUser.Avatar = request.Avatar.Trim();
+            }
+
+            // Gender
+            if (request.Gender.HasValue)
+            {
+                existingUser.Gender = request.Gender.Value;
+            }
+
             existingUser.UpdatedAt = DateTimeOffset.UtcNow;
 
-            // Update in database
             try
             {
                 _unitOfWork.Users.Update(existingUser);
@@ -128,11 +151,12 @@ namespace HeartSpace.Application.Services.UserService
             }
             catch (Exception e)
             {
-                throw new DatabaseException("Cannot update profile of an inactive user", e);
+                throw new DatabaseException("Cannot update profile", e);
             }
 
             return true;
         }
+
     }
 }
 

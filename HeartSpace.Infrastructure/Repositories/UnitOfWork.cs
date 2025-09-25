@@ -13,15 +13,19 @@ namespace HeartSpace.Infrastructure.Repositories
         public UnitOfWork(
           RepositoryContext context,
           IUserRepository userRepository,
-          IRefreshTokenRepository refreshTokenRepository)
+          IRefreshTokenRepository refreshTokenRepository,
+          IScheduleRepository schedules)
         {
             _context = context;
             Users = userRepository;
             RefreshTokens = refreshTokenRepository;
+            Schedules = schedules;
         }
 
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
+
+        public IScheduleRepository Schedules { get; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {

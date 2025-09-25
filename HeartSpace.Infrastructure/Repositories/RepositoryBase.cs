@@ -51,9 +51,10 @@ namespace HeartSpace.Infrastructure.Repositories
             return await _context.Set<T>().AnyAsync(expression);
         }
 
-        public virtual async Task AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
+            return entity;
         }
         public virtual async Task UpdateAsync(T entity)
         {

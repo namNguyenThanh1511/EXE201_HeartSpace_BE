@@ -4,6 +4,7 @@ using HeartSpace.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HeartSpace.Infrastructure.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20250925010741_add-user-profile")]
+    partial class adduserprofile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,45 +24,6 @@ namespace HeartSpace.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Appointment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ConsultantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ScheduleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ConsultantId");
-
-                    b.HasIndex("ScheduleId");
-
-                    b.ToTable("Appointment");
-                });
 
             modelBuilder.Entity("HeartSpace.Domain.Entities.ClientProfile", b =>
                 {
@@ -179,74 +143,6 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Schedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ConsultantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("EndTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset>("StartTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConsultantId");
-
-                    b.ToTable("Schedule");
-                });
-
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Session", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AppointmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("EndAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Feedback")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Summary")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId")
-                        .IsUnique();
-
-                    b.ToTable("Session");
-                });
-
             modelBuilder.Entity("HeartSpace.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -319,33 +215,6 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Appointment", b =>
-                {
-                    b.HasOne("HeartSpace.Domain.Entities.User", "Client")
-                        .WithMany("ClientAppointments")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HeartSpace.Domain.Entities.User", "Consultant")
-                        .WithMany("ConsultantAppointments")
-                        .HasForeignKey("ConsultantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HeartSpace.Domain.Entities.Schedule", "Schedule")
-                        .WithMany("Appointments")
-                        .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Consultant");
-
-                    b.Navigation("Schedule");
-                });
-
             modelBuilder.Entity("HeartSpace.Domain.Entities.ClientProfile", b =>
                 {
                     b.HasOne("HeartSpace.Domain.Entities.User", "Client")
@@ -379,49 +248,11 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Schedule", b =>
-                {
-                    b.HasOne("HeartSpace.Domain.Entities.User", "Consultant")
-                        .WithMany("ConsultantSchedules")
-                        .HasForeignKey("ConsultantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Consultant");
-                });
-
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Session", b =>
-                {
-                    b.HasOne("HeartSpace.Domain.Entities.Appointment", "Appointment")
-                        .WithOne("Session")
-                        .HasForeignKey("HeartSpace.Domain.Entities.Session", "AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-                });
-
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Appointment", b =>
-                {
-                    b.Navigation("Session");
-                });
-
-            modelBuilder.Entity("HeartSpace.Domain.Entities.Schedule", b =>
-                {
-                    b.Navigation("Appointments");
-                });
-
             modelBuilder.Entity("HeartSpace.Domain.Entities.User", b =>
                 {
-                    b.Navigation("ClientAppointments");
-
                     b.Navigation("ClientProfile");
 
-                    b.Navigation("ConsultantAppointments");
-
                     b.Navigation("ConsultantProfile");
-
-                    b.Navigation("ConsultantSchedules");
 
                     b.Navigation("RefreshTokens");
                 });

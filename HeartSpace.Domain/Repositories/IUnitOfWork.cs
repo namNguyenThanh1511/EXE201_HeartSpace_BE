@@ -7,6 +7,8 @@ namespace HeartSpace.Domain.Repositories
         IUserRepository Users { get; }
         IRefreshTokenRepository RefreshTokens { get; }
 
+        IScheduleRepository Schedules { get; }
+
         // Transaction methods
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task CommitTransactionAsync();

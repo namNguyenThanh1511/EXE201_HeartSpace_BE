@@ -47,7 +47,7 @@
     public class UserAlreadyExistsException : BusinessRuleViolationException
     {
         public UserAlreadyExistsException(string field, string value)
-            : base($"User with {field} '{value}' already exists", "USER_ALREADY_EXISTS") { }
+            : base($"User with {field} {value} already exists", "USER_ALREADY_EXISTS") { }
     }
 
     public class InsufficientPermissionException : BaseDomainException

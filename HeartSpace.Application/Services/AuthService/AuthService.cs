@@ -90,7 +90,7 @@ namespace HeartSpace.Application.Services.AuthService
             // Create and save user
             var userEntity = userForCreationDto.MapToUser();
             userEntity.Password = _passwordHasher.HashPassword(userEntity, userForCreationDto.Password);
-            userEntity.UserRole = User.Role.User;
+            userEntity.UserRole = User.Role.Client;
             userEntity.IsActive = true;
             userEntity.CreatedAt = DateTimeOffset.UtcNow;
             userEntity.UpdatedAt = DateTimeOffset.UtcNow;

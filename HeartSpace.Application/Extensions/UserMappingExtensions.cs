@@ -24,7 +24,11 @@ namespace HeartSpace.Application.Extensions
         }
         public static UserProfileResponse ToProfileResponse(this User user)
         {
-            var age = CalculateAge(user.DateOfBirth.Value);
+            int? age = null;
+            if (user.DateOfBirth != null)
+            {
+                age = CalculateAge(user.DateOfBirth.Value);
+            }
 
             return new UserProfileResponse
             {
@@ -33,7 +37,7 @@ namespace HeartSpace.Application.Extensions
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Username = user.Username,
-                DateOfBirth = user.DateOfBirth.Value,
+                DateOfBirth = user.DateOfBirth.ToString() ?? null,
                 Identifier = user.Identifier,
                 Avatar = user.Avatar,
                 Role = user.UserRole.ToString(),
@@ -41,14 +45,17 @@ namespace HeartSpace.Application.Extensions
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt,
                 Age = age,
+                Gender = user.Gender.Value,
                 IsAdult = age >= 18,
+
+
                 //AvatarUrl = BuildAvatarUrl(user.Avatar, baseAvatarUrl)
             };
         }
 
 
 
-        private static int CalculateAge(DateOnly birthDate)
+        private static int? CalculateAge(DateOnly birthDate)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
             var age = today.Year - birthDate.Year;
