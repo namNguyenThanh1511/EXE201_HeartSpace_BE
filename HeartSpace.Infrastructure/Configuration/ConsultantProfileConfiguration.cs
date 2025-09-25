@@ -9,6 +9,9 @@ namespace HeartSpace.Infrastructure.Configuration
         public void Configure(EntityTypeBuilder<ConsultantProfile> builder)
         {
             builder.ToTable("ConsultantProfiles");
+            builder.Property(cp => cp.Id)
+                        .ValueGeneratedOnAdd()
+                        .IsRequired();
             builder.HasKey(cp => cp.Id);
             builder.Property(cp => cp.Bio)
                 .IsRequired()

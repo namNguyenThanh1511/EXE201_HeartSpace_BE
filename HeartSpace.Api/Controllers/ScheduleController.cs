@@ -23,5 +23,14 @@ namespace HeartSpace.Api.Controllers
             var result = await _scheduleService.CreateScheduleAsync(request);
             return Created(result);
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<IEnumerable<ScheduleResponse>>>> GetSchedulesByConsultantId()
+        {
+            var result = await _scheduleService.GetSchedulesByConsultantIdAsync();
+            return Ok(result, "Get schedules successfully");
+        }
+
     }
 }

@@ -7,10 +7,10 @@
         public DateTimeOffset StartTime { get; set; }
         public DateTimeOffset EndTime { get; set; }
         public bool IsAvailable { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.Now;
         // Navigation property
-        public User Consultant { get; set; }
+        public User? Consultant { get; set; }
         // 1 schedule có thể có nhiều appointment
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }

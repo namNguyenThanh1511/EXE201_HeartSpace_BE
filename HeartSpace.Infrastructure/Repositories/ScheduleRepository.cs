@@ -8,7 +8,14 @@ namespace HeartSpace.Infrastructure.Repositories
     {
         public ScheduleRepository(RepositoryContext context) : base(context)
         {
+
+
         }
 
+        public Task<IEnumerable<Schedule>> GetSchedulesByConsultantIdAsync(Guid consultantId)
+        {
+            var schedules = FindByCondition(s => s.ConsultantId == consultantId).AsEnumerable();
+            return Task.FromResult(schedules);
+        }
     }
 }

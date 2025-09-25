@@ -9,5 +9,7 @@ namespace HeartSpace.Application.Services.ScheduleService
         Task<ScheduleResponse> CreateScheduleAsync(ScheduleCreation schedule);
         Task<Domain.Entities.Schedule> UpdateScheduleAsync(Domain.Entities.Schedule schedule);
         Task DeleteScheduleAsync(Guid id);
+
+        Task<IEnumerable<ScheduleResponse>> GetSchedulesByConsultantIdAsync();
     }
 }

@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public DateTimeOffset StartTime { get; set; }
         public DateTimeOffset EndTime { get; set; }
+        public bool IsAvailable { get; set; }
 
     }
 }

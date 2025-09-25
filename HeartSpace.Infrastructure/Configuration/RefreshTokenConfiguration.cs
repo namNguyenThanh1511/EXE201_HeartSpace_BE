@@ -10,6 +10,9 @@ namespace HeartSpace.Infrastructure.Configuration
         {
             builder.ToTable("RefreshTokens");
             builder.HasKey(rt => rt.Id);
+            builder.Property(rt => rt.Id)
+                .ValueGeneratedOnAdd()
+                .IsRequired();
             builder.Property(rt => rt.Token)
                 .IsRequired()
                 .HasMaxLength(500);

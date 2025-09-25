@@ -10,6 +10,9 @@ namespace HeartSpace.Infrastructure.Configuration
         {
             builder.ToTable("ClientProfiles");
             builder.HasKey(cp => cp.Id);
+            builder.Property(cp => cp.Id)
+                        .ValueGeneratedOnAdd()
+                        .IsRequired();
             builder.Property(cp => cp.Bio)
                 .IsRequired()
                 .HasMaxLength(2000);

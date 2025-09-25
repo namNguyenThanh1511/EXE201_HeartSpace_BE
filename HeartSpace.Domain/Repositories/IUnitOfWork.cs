@@ -9,6 +9,8 @@ namespace HeartSpace.Domain.Repositories
 
         IScheduleRepository Schedules { get; }
 
+        IAppointmentRepository Appointments { get; }
+
         // Transaction methods
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task CommitTransactionAsync();

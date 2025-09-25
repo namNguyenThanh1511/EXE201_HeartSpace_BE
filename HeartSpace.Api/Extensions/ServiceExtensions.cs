@@ -1,5 +1,6 @@
 ﻿using HeartSpace.Api.Middleware;
 using HeartSpace.Application.Configuration;
+using HeartSpace.Application.Services.AppointmentService;
 using HeartSpace.Application.Services.AuthService;
 using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.TokenService;
@@ -29,6 +30,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
             // ✅ Then UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -39,6 +41,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IScheduleService, ScheduleService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
 
 
         }

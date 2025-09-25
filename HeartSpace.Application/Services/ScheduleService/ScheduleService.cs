@@ -19,7 +19,21 @@ namespace HeartSpace.Application.Services.ScheduleService
         }
         public async Task<ScheduleResponse> CreateScheduleAsync(ScheduleCreation request)
         {
+            if (request.StartTime >= request.EndTime)
+                throw new InvalidOperationException("Thời gian bắt đầu phải trước thời gian kết thúc.");
+
+            if ((request.EndTime - request.StartTime).TotalMinutes < 30)
+                throw new InvalidOperationException("Lịch phải có thời lượng tối thiểu 30 phút.");
+
+            if (request.StartTime < DateTimeOffset.UtcNow)
+                throw new InvalidOperationException("Không thể tạo lịch trong quá khứ.");
+
             (string userId, string role) = _currentUserService.GetCurrentUser();
+            var currentUserSchedules = await _unitOfWork.Schedules.GetSchedulesByConsultantIdAsync(Guid.Parse(userId));
+            bool overlaps = currentUserSchedules.Any(s => request.StartTime < s.EndTime && request.EndTime > s.StartTime);
+            if (overlaps)
+                throw new InvalidOperationException("Lịch mới bị trùng với lịch đã có.");
+
             if (role != Role.Consultant.ToString())
             {
                 throw new InsufficientPermissionException("Only Consultant and Admin can create schedules.");
@@ -29,9 +43,7 @@ namespace HeartSpace.Application.Services.ScheduleService
                 ConsultantId = Guid.Parse(userId),
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
-                IsAvailable = true,
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
+                IsAvailable = true
             };
             schedule = await _unitOfWork.Schedules.AddAsync(schedule);
             await _unitOfWork.SaveAsync();
@@ -40,6 +52,7 @@ namespace HeartSpace.Application.Services.ScheduleService
                 Id = schedule.Id,
                 StartTime = schedule.StartTime,
                 EndTime = schedule.EndTime,
+                IsAvailable = schedule.IsAvailable,
             };
             return response;
         }
@@ -62,6 +75,18 @@ namespace HeartSpace.Application.Services.ScheduleService
         public Task<Schedule> UpdateScheduleAsync(Schedule schedule)
         {
             throw new NotImplementedException();
+        }
+        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesByConsultantIdAsync()
+        {
+            (string userId, string role) = _currentUserService.GetCurrentUser();
+            var schedules = await _unitOfWork.Schedules.GetSchedulesByConsultantIdAsync(Guid.Parse(userId));
+            return schedules.Select(s => new ScheduleResponse
+            {
+                Id = s.Id,
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                IsAvailable = s.IsAvailable
+            });
         }
     }
 }

@@ -9,8 +9,11 @@ namespace HeartSpace.Infrastructure.Configuration
         public void Configure(EntityTypeBuilder<Appointment> builder)
         {
             builder.ToTable("Appointments");
+            builder.Property(a => a.Id)
+                            .ValueGeneratedOnAdd()
+                            .IsRequired();
             builder.HasKey(a => a.Id);
-            builder.Property(a => a.Status)
+            builder.Property(a => a.Status).HasConversion<string>()
                 .IsRequired();
             builder.Property(a => a.Notes);
             builder.Property(a => a.CreatedAt)

@@ -14,18 +14,21 @@ namespace HeartSpace.Infrastructure.Repositories
           RepositoryContext context,
           IUserRepository userRepository,
           IRefreshTokenRepository refreshTokenRepository,
-          IScheduleRepository schedules)
+          IScheduleRepository scheduleRepository, IAppointmentRepository appointmentRepository)
         {
             _context = context;
             Users = userRepository;
             RefreshTokens = refreshTokenRepository;
-            Schedules = schedules;
+            Schedules = scheduleRepository;
+            Appointments = appointmentRepository;
         }
 
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
 
         public IScheduleRepository Schedules { get; }
+
+        public IAppointmentRepository Appointments { get; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
