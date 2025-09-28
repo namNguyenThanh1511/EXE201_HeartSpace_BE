@@ -1,6 +1,7 @@
 ﻿using HeartSpace.Api.Models;
 using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.ScheduleService.DTOs;
+using HeartSpace.Application.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,11 @@ namespace HeartSpace.Api.Controllers
     public class ScheduleController : BaseController
     {
         private readonly IScheduleService _scheduleService;
-        public ScheduleController(IScheduleService scheduleService)
+        private readonly ICurrentUserService _currentUserService;
+        public ScheduleController(IScheduleService scheduleService, ICurrentUserService currentUserService)
         {
             _scheduleService = scheduleService;
+            _currentUserService = currentUserService;
         }
 
         [HttpPost]
@@ -24,11 +27,11 @@ namespace HeartSpace.Api.Controllers
             return Created(result);
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ScheduleResponse>>>> GetSchedulesByConsultantId()
+        [HttpGet("consultant/{consultantId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<ScheduleResponse>>>> GetSchedulesByConsultantId(Guid consultantId)
         {
-            var result = await _scheduleService.GetSchedulesByConsultantIdAsync();
+
+            var result = await _scheduleService.GetSchedulesByConsultantIdAsync(consultantId);
             return Ok(result, "Get schedules successfully");
         }
 

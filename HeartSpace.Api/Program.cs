@@ -30,6 +30,7 @@ builder.Services.ConfigureGlobalException();
 builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.ConfigureCors();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline. 
@@ -46,6 +47,7 @@ if (app.Environment.IsEnvironment("LocalDocker"))
         }
     }
 }
+app.Seed();
 
 app.UseSwagger();
 app.UseSwaggerUI();

@@ -6,6 +6,7 @@ using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.TokenService;
 using HeartSpace.Application.Services.UserService;
 using HeartSpace.Domain.Repositories;
+using HeartSpace.Infrastructure;
 using HeartSpace.Infrastructure.Persistence;
 using HeartSpace.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -129,6 +130,14 @@ namespace HeartSpace.Api.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
                 };
             });
+        }
+
+        public async static void Seed(this IApplicationBuilder builder)
+        {
+            using (var scope = builder.ApplicationServices.CreateScope())
+            {
+                await DbInitializer.SeedUsersAsync(scope.ServiceProvider);
+            }
         }
 
 

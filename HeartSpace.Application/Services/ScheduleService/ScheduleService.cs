@@ -76,10 +76,10 @@ namespace HeartSpace.Application.Services.ScheduleService
         {
             throw new NotImplementedException();
         }
-        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesByConsultantIdAsync()
+        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesByConsultantIdAsync(Guid consultantId)
         {
-            (string userId, string role) = _currentUserService.GetCurrentUser();
-            var schedules = await _unitOfWork.Schedules.GetSchedulesByConsultantIdAsync(Guid.Parse(userId));
+
+            var schedules = await _unitOfWork.Schedules.GetSchedulesByConsultantIdAsync(consultantId);
             return schedules.Select(s => new ScheduleResponse
             {
                 Id = s.Id,

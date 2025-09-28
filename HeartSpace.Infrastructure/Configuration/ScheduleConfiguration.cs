@@ -14,8 +14,8 @@ namespace HeartSpace.Infrastructure.Configuration
             builder.Property(s => s.StartTime).IsRequired();
             builder.Property(s => s.EndTime).IsRequired();
             builder.Property(s => s.IsAvailable).IsRequired().HasDefaultValue(true);
-            builder.Property(s => s.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
-            builder.Property(s => s.UpdatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(s => s.CreatedAt);
+            builder.Property(s => s.UpdatedAt);
             // Relationship with User (Consultant)
             builder.HasOne(s => s.Consultant)
                    .WithMany(u => u.ConsultantSchedules) // Assuming Consultant  have a collection of Schedules

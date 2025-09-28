@@ -75,7 +75,6 @@ namespace HeartSpace.Application.Services.TokenService
         {
             var refreshToken = new RefreshToken
             {
-                Id = Guid.NewGuid(),
                 Token = GenerateRandomToken(),
                 UserId = userId,
                 ExpiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays),

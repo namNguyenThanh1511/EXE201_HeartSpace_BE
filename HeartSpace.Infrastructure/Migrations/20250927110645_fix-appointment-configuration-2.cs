@@ -5,7 +5,7 @@
 namespace HeartSpace.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class modifyappointment3 : Migration
+    public partial class fixappointmentconfiguration2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

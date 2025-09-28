@@ -43,11 +43,15 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReasonForCancellation")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -60,7 +64,7 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("Appointment");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("HeartSpace.Domain.Entities.ClientProfile", b =>
@@ -71,7 +75,8 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.Property<string>("Bio")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
@@ -81,19 +86,23 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.Property<string>("Goals")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("MedicalHistory")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("MentalHealthStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("Preferences")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -103,7 +112,7 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.HasIndex("ClientId")
                         .IsUnique();
 
-                    b.ToTable("ClientProfile");
+                    b.ToTable("ClientProfiles", (string)null);
                 });
 
             modelBuilder.Entity("HeartSpace.Domain.Entities.ConsultantProfile", b =>
@@ -114,10 +123,12 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.Property<string>("Bio")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("Certifications")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<Guid>("ConsultantId")
                         .HasColumnType("uniqueidentifier");
@@ -133,7 +144,8 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.Property<string>("Specialization")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -143,7 +155,7 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.HasIndex("ConsultantId")
                         .IsUnique();
 
-                    b.ToTable("ConsultantProfile");
+                    b.ToTable("ConsultantProfiles", (string)null);
                 });
 
             modelBuilder.Entity("HeartSpace.Domain.Entities.RefreshToken", b =>
@@ -166,7 +178,8 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -176,9 +189,14 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExpiryDate");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("HeartSpace.Domain.Entities.Schedule", b =>
@@ -197,7 +215,9 @@ namespace HeartSpace.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<DateTimeOffset>("StartTime")
                         .HasColumnType("datetimeoffset");
@@ -338,7 +358,7 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.HasOne("HeartSpace.Domain.Entities.Schedule", "Schedule")
                         .WithMany("Appointments")
                         .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Client");

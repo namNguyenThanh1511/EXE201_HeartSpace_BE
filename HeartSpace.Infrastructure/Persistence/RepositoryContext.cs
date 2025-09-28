@@ -8,6 +8,7 @@ namespace HeartSpace.Infrastructure.Persistence
     public class RepositoryContext : DbContext
     {
 
+
         public RepositoryContext(DbContextOptions<RepositoryContext> options)
             : base(options)
         { }
@@ -16,6 +17,12 @@ namespace HeartSpace.Infrastructure.Persistence
             // Configure your entities here
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientProfileConfiguration());
+            modelBuilder.ApplyConfiguration(new ConsultantProfileConfiguration());
+            modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+            modelBuilder.ApplyConfiguration(new ScheduleConfiguration());
+            modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
+
         }
         public override int SaveChanges()
         {
@@ -29,5 +36,8 @@ namespace HeartSpace.Infrastructure.Persistence
 
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+
+
     }
 }
