@@ -16,14 +16,37 @@ namespace HeartSpace.Api.Models
         [JsonPropertyName("errors")]
         public List<ApiError>? Errors { get; set; }
 
+        public object? MetaData { get; set; }
+
         public bool IsSuccess => Status == "success";
+        public ApiResponse(string status, string message, int code, object? metaData = null)
+        {
+            Status = status;
+            Message = message;
+            Code = code;
+            MetaData = metaData;
+
+        }
+        public ApiResponse() { }
+
     }
 
     public class ApiResponse<T> : ApiResponse
     {
         [JsonPropertyName("data")]
         public T? Data { get; set; }
+        public ApiResponse(T? data, string status = "success", string message = "", int code = 200, object? metaData = null)
+            : base(status, message, code, metaData)
+        {
+
+            Data = data;
+        }
+        public ApiResponse() : base() { }
+
+
     }
+
+
 
     public class ApiError
     {

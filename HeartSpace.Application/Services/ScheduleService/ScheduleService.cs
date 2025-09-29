@@ -3,6 +3,7 @@ using HeartSpace.Application.Services.UserService;
 using HeartSpace.Domain.Entities;
 using HeartSpace.Domain.Exception;
 using HeartSpace.Domain.Repositories;
+using HeartSpace.Domain.RequestFeatures;
 using static HeartSpace.Domain.Entities.User;
 
 namespace HeartSpace.Application.Services.ScheduleService
@@ -76,17 +77,21 @@ namespace HeartSpace.Application.Services.ScheduleService
         {
             throw new NotImplementedException();
         }
-        public async Task<IEnumerable<ScheduleResponse>> GetSchedulesByConsultantIdAsync(Guid consultantId)
+        public async Task<PagedList<ScheduleResponse>> GetSchedulesByConsultantIdAsync(Guid consultantId, ScheduleQueryParams queryParams)
         {
 
             var schedules = await _unitOfWork.Schedules.GetSchedulesByConsultantIdAsync(consultantId);
-            return schedules.Select(s => new ScheduleResponse
+            var pagedSchedules = await PagedList<Schedule>.ToPagedList(schedules.AsQueryable(), queryParams.PageNumber, queryParams.PageSize);
+            var scheduleResponses = pagedSchedules.Select(s => new ScheduleResponse
             {
                 Id = s.Id,
                 StartTime = s.StartTime,
                 EndTime = s.EndTime,
-                IsAvailable = s.IsAvailable
-            });
+                IsAvailable = s.IsAvailable,
+            }).ToList();
+
+            return new PagedList<ScheduleResponse>(scheduleResponses, pagedSchedules.Count, queryParams.PageNumber, queryParams.PageSize);
+
         }
     }
 }

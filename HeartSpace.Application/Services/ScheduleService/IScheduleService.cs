@@ -1,15 +1,17 @@
 ﻿using HeartSpace.Application.Services.ScheduleService.DTOs;
+using HeartSpace.Domain.Entities;
+using HeartSpace.Domain.RequestFeatures;
 
 namespace HeartSpace.Application.Services.ScheduleService
 {
     public interface IScheduleService
     {
-        Task<IEnumerable<Domain.Entities.Schedule>> GetAllSchedulesAsync();
-        Task<Domain.Entities.Schedule> GetScheduleByIdAsync(Guid id);
+        Task<IEnumerable<Schedule>> GetAllSchedulesAsync();
+        Task<Schedule> GetScheduleByIdAsync(Guid id);
         Task<ScheduleResponse> CreateScheduleAsync(ScheduleCreation schedule);
-        Task<Domain.Entities.Schedule> UpdateScheduleAsync(Domain.Entities.Schedule schedule);
+        Task<Schedule> UpdateScheduleAsync(Domain.Entities.Schedule schedule);
         Task DeleteScheduleAsync(Guid id);
 
-        Task<IEnumerable<ScheduleResponse>> GetSchedulesByConsultantIdAsync(Guid consultantId);
+        Task<PagedList<ScheduleResponse>> GetSchedulesByConsultantIdAsync(Guid consultantId, ScheduleQueryParams queryParams);
     }
 }

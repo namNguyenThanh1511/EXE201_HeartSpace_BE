@@ -38,7 +38,7 @@ namespace HeartSpace.Application.Extensions
                 PhoneNumber = user.PhoneNumber,
                 Username = user.Username,
                 DateOfBirth = user.DateOfBirth.ToString() ?? null,
-                Identifier = user.Identifier,
+                Identifier = user.Identifier ?? null,
                 Avatar = user.Avatar,
                 Role = user.UserRole.ToString(),
                 IsActive = user.IsActive,

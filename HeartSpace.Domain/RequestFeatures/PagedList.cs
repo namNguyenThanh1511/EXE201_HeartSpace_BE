@@ -16,13 +16,13 @@ namespace HeartSpace.Domain.RequestFeatures
             };
             AddRange(items);
         }
-        public async static Task<PagedList<T>> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize, CancellationToken ct = default)
+        public async static Task<PagedList<T>> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize)
         {
             var totalCount = await source.CountAsync();
             var items = await source
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync(ct);
+                .ToListAsync();
             return new PagedList<T>(items, totalCount, pageNumber, pageSize);
         }
     }

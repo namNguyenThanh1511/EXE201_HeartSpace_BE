@@ -1,6 +1,7 @@
 ﻿using HeartSpace.Api.Models;
 using HeartSpace.Application.Services.UserService;
 using HeartSpace.Application.Services.UserService.DTOs;
+using HeartSpace.Domain.RequestFeatures;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -8,7 +9,6 @@ using System.Security.Claims;
 namespace HeartSpace.Api.Controllers
 {
     [Route("api/users")]
-    [Authorize]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -17,6 +17,7 @@ namespace HeartSpace.Api.Controllers
             _userService = userService;
         }
         [HttpGet("profile")]
+        [Authorize]
         public async Task<ActionResult<ApiResponse<UserProfileResponse?>>> GetProfile()
         {
             // Get user ID from JWT token
@@ -31,6 +32,7 @@ namespace HeartSpace.Api.Controllers
         }
 
         [HttpPut("profile")]
+        [Authorize]
         public async Task<ActionResult<ApiResponse>> UpdateProfile([FromBody] UserProfileUpdateDto request)
         {
             // Get user ID from JWT token
@@ -46,6 +48,13 @@ namespace HeartSpace.Api.Controllers
                 return BadRequest("Failed to update profile");
             }
             return Ok("Profile updated successfully");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<PagedList<UserProfileResponse>>>> GetAllUsers([FromQuery] UserQueryParams queryParams)
+        {
+            var users = await _userService.GetAllUserProfileAsync(queryParams);
+            return Ok(users, "Get all users successfully", users.MetaData);
         }
     }
 }

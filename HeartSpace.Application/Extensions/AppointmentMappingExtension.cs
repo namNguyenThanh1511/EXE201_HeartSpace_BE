@@ -14,6 +14,7 @@ namespace HeartSpace.Application.Extensions
                 ClientId = appointment.ClientId,
                 ConsultantId = appointment.ConsultantId,
                 Status = appointment.Status.ToString(),
+                ScheduleId = appointment.ScheduleId,
                 CreatedAt = appointment.CreatedAt,
                 UpdatedAt = appointment.UpdatedAt
             };

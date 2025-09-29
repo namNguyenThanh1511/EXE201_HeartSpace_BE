@@ -4,18 +4,20 @@ using HeartSpace.Application.Services.UserService.DTOs;
 using HeartSpace.Domain.Entities;
 using HeartSpace.Domain.Exception;
 using HeartSpace.Domain.Repositories;
+using HeartSpace.Domain.RequestFeatures;
 
 namespace HeartSpace.Application.Services.UserService
 {
     public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUserService;
 
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
-
+            _currentUserService = currentUserService;
         }
         public async Task<User> FindUserByEmailAsync(string email)
         {
@@ -155,6 +157,63 @@ namespace HeartSpace.Application.Services.UserService
             }
 
             return true;
+        }
+
+        public async Task<PagedList<UserProfileResponse>> GetAllUserProfileAsync(UserQueryParams queryParams)
+        {
+
+
+            // 2. Tạo query cơ sở
+            IQueryable<User> query = _unitOfWork.Users.FindByCondition((a => a.IsActive));
+
+
+            if (queryParams.Role == User.Role.Consultant)
+            {
+                query = query.Where(u => u.UserRole == User.Role.Consultant);
+            }
+            else if (queryParams.Role == User.Role.Client)
+            {
+                query = query.Where(u => u.UserRole == User.Role.Client);
+            }
+            else if (queryParams.Role == User.Role.Admin)
+            {
+                query = query.Where(u => u.UserRole == User.Role.Admin);
+            }
+            if (queryParams.SearchTerm is not null)
+            {
+                var searchTerm = queryParams.SearchTerm.Trim().ToLower();
+                query = query.Where(u => u.FullName.ToLower().Contains(searchTerm) ||
+                                         u.Email.ToLower().Contains(searchTerm) ||
+                                         (u.PhoneNumber != null && u.PhoneNumber.ToLower().Contains(searchTerm)) ||
+                                         u.Username.ToLower().Contains(searchTerm));
+            }
+            // 3. Áp dụng bộ lọc từ queryParams nếu có
+            if (queryParams.Gender.HasValue)
+            {
+                query = query.Where(u => u.Gender == queryParams.Gender.Value);
+            }
+
+
+            // 5. Include navigation properties nếu cần
+
+
+            // 6. Thực hiện phân trang
+            var pagedUser = await PagedList<User>.ToPagedList(
+                query.OrderByDescending(a => a.CreatedAt),
+                queryParams.PageNumber,
+                queryParams.PageSize
+            );
+
+            // 7. Map sang DTO (AppointmentResponse)
+            var mappedUsers = pagedUser.Select(a => a.ToProfileResponse()).ToList();
+
+            var result = new PagedList<UserProfileResponse>(
+                mappedUsers,
+                pagedUser.MetaData.TotalCount,
+                pagedUser.MetaData.CurrentPage,
+                pagedUser.MetaData.PageSize
+            );
+            return result;
         }
 
     }

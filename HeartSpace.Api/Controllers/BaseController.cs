@@ -7,11 +7,16 @@ namespace HeartSpace.Api.Controllers
     public abstract class BaseController : ControllerBase
     {
         // Success responses
-        protected ActionResult<ApiResponse<T>> Ok<T>(T data, string message = "Thao tác thành công")
+        protected ActionResult<ApiResponse<T>> Ok<T>(
+            T data,
+            string message = "Thao tác thành công",
+            object? metaData = null
+        )
         {
-            var response = ResponseBuilder.SuccessWithData(data, message);
+            var response = ResponseBuilder.SuccessWithData(data, message, 200, metaData);
             return base.Ok(response);
         }
+
 
         protected ActionResult<ApiResponse> Ok(string message = "Thao tác thành công")
         {

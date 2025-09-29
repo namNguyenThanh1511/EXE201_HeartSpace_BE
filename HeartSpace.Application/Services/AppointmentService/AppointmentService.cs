@@ -5,7 +5,6 @@ using HeartSpace.Domain.Entities;
 using HeartSpace.Domain.Exception;
 using HeartSpace.Domain.Repositories;
 using HeartSpace.Domain.RequestFeatures;
-using Microsoft.EntityFrameworkCore;
 
 namespace HeartSpace.Application.Services.AppointmentService
 {
@@ -63,10 +62,10 @@ namespace HeartSpace.Application.Services.AppointmentService
                 query = query.Where(a => a.Status == searchParams.Status.Value);
 
             // 5. Include navigation properties nếu cần
-            query = query
-                .Include(a => a.Client)
-                .Include(a => a.Consultant)
-                .Include(a => a.Schedule);
+            //query = query
+            //    .Include(a => a.Client)
+            //    .Include(a => a.Consultant)
+            //    .Include(a => a.Schedule);
 
             // 6. Thực hiện phân trang
             var pagedAppointments = await PagedList<Appointment>.ToPagedList(
@@ -146,7 +145,7 @@ namespace HeartSpace.Application.Services.AppointmentService
 
         public async Task<bool> UpdateAppointmentAsync(Guid id, AppointmentUpdateRequest request)
         {
-            var appointment = _unitOfWork.Appointments.GetByIdAsync(id).Result ?? throw new EntityNotFoundException("Không tìm thấy lịch hẹn phù hợp");
+            var appointment = _unitOfWork.Appointments.GetByIdWithScheduleAsync(id).Result ?? throw new EntityNotFoundException("Không tìm thấy lịch hẹn phù hợp");
             (string userId, string role) = _currentUserService.GetCurrentUser();
             var isOwner = appointment.ClientId == Guid.Parse(userId) || appointment.ConsultantId == Guid.Parse(userId);
             if (!isOwner && role != User.Role.Admin.ToString())
@@ -156,18 +155,18 @@ namespace HeartSpace.Application.Services.AppointmentService
                 case AppointmentUpdateRequest.UpdateFor.ConfirmAppointment:
                     if (role != User.Role.Consultant.ToString() && role != User.Role.Admin.ToString())
                         throw new InsufficientPermissionException("Chỉ có tư vấn hoặc quản trị viên mới có thể chấp nhận yêu cầu lịch hẹn.");
-                    await ConfirmAppointment(appointment);
+                    await ConfirmAppointmentAsync(appointment);
                     return true;
                 case AppointmentUpdateRequest.UpdateFor.CancelAppointment:
                     if (string.IsNullOrWhiteSpace(request.ReasonForCancellation))
                         throw new BusinessRuleViolationException("Lý do hủy không được để trống.");
-                    await CancelAppointment(appointment, request.ReasonForCancellation);
+                    await CancelAppointmentAsync(appointment, request.ReasonForCancellation);
                     return true;
                 case AppointmentUpdateRequest.UpdateFor.CompleteAppointment:
-                    await CompleteAppointment(appointment);
+                    await CompleteAppointmentAsync(appointment);
                     return true;
                 case AppointmentUpdateRequest.UpdateFor.RescheduleAppointment:
-                    await RescheduleAppointment(appointment, request.NewScheduleId);
+                    await RescheduleAppointmentAsync(appointment, request.NewScheduleId);
                     return true;
                 case AppointmentUpdateRequest.UpdateFor.AddNotes:
                     if (string.IsNullOrWhiteSpace(request.Notes))
@@ -185,7 +184,7 @@ namespace HeartSpace.Application.Services.AppointmentService
 
         }
 
-        private async Task ConfirmAppointment(Appointment appointment)
+        private async Task ConfirmAppointmentAsync(Appointment appointment)
         {
             if (appointment.Status != AppointmentStatus.Pending)
                 throw new BusinessRuleViolationException("Chỉ có thể chấp nhận yêu cầu lịch hẹn đang chờ");
@@ -193,30 +192,44 @@ namespace HeartSpace.Application.Services.AppointmentService
             appointment.Status = AppointmentStatus.Confirm;
             appointment.UpdatedAt = DateTimeOffset.UtcNow;
             _unitOfWork.Appointments.Update(appointment);
-            var schedule = await _unitOfWork.Schedules.GetByIdAsync(appointment.ScheduleId) ?? throw new EntityNotFoundException("Không tìm thấy lịch phù hợp");
-            schedule.IsAvailable = false;
-            _unitOfWork.Schedules.Update(schedule);
+
+            appointment.Schedule.IsAvailable = false;
+            _unitOfWork.Schedules.Update(appointment.Schedule);
             await _unitOfWork.SaveAsync();
         }
-        private async Task CancelAppointment(Appointment appointment, string reason)
+        private async Task CancelAppointmentAsync(Appointment appointment, string reason)
         {
-            if (appointment.Status == AppointmentStatus.Pending)
-                throw new BusinessRuleViolationException("Lịch hẹn đang chờ, không thể hủy.");
-            if (appointment.Status == AppointmentStatus.Completed)
-                throw new BusinessRuleViolationException("Lịch hẹn đã hoàn thành, không thể hủy.");
-            if (appointment.Status == AppointmentStatus.Cancelled)
-                throw new BusinessRuleViolationException("Lịch hẹn đã bị hủy trước đó.");
+            // Kiểm tra trạng thái
+            if (appointment.Status != AppointmentStatus.Pending &&
+                appointment.Status != AppointmentStatus.Confirm)
+                throw new BusinessRuleViolationException("Chỉ có thể hủy lịch hẹn đang chờ hoặc đã xác nhận");
+
+
+            // Tính khoảng cách thời gian giữa hiện tại và thời gian bắt đầu
+            var now = DateTimeOffset.UtcNow;
+            var diffHours = (appointment.Schedule.StartTime - now).TotalHours;
+
+            // Kiểm tra điều kiện 8 tiếng
+            if (diffHours < 8)
+                throw new BusinessRuleViolationException("Chỉ có thể hủy lịch hẹn trước ít nhất 8 tiếng");
+
+            // Cho phép hủy
             appointment.Status = AppointmentStatus.Cancelled;
             appointment.ReasonForCancellation = reason;
-            appointment.UpdatedAt = DateTimeOffset.UtcNow;
-            var schedule = await _unitOfWork.Schedules.GetByIdAsync(appointment.ScheduleId) ?? throw new EntityNotFoundException("Không tìm thấy lịch phù hợp");
-            schedule.IsAvailable = true;
-            _unitOfWork.Schedules.Update(schedule);
+            appointment.UpdatedAt = now;
+
+            // Cho phép schedule được đặt lại
+            appointment.Schedule.IsAvailable = true;
+            appointment.Schedule.UpdatedAt = now;
+
+            // Update & Save
             _unitOfWork.Appointments.Update(appointment);
+            _unitOfWork.Schedules.Update(appointment.Schedule);
             await _unitOfWork.SaveAsync();
         }
 
-        private async Task CompleteAppointment(Appointment appointment)
+
+        private async Task CompleteAppointmentAsync(Appointment appointment)
         {
             if (appointment.Status != AppointmentStatus.Confirm)
                 throw new BusinessRuleViolationException("Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.");
@@ -235,7 +248,7 @@ namespace HeartSpace.Application.Services.AppointmentService
             await _unitOfWork.SaveAsync();
         }
 
-        private async Task RescheduleAppointment(Appointment appointment, Guid? newScheduleId)
+        private async Task RescheduleAppointmentAsync(Appointment appointment, Guid? newScheduleId)
         {
             var newSchedule = await _unitOfWork.Schedules.GetByIdAsync(newScheduleId) ?? throw new EntityNotFoundException("Không tìm thấy lịch phù hợp");
             if (!newSchedule.IsAvailable)
@@ -248,7 +261,7 @@ namespace HeartSpace.Application.Services.AppointmentService
                 throw new BusinessRuleViolationException("Chỉ có thể thay đổi lịch hẹn đã được xác nhận trước thời gian bắt đầu 8 tiếng");
             if (appointment.Status == AppointmentStatus.Confirm)
             {
-                var oldSchedule = await _unitOfWork.Schedules.GetByIdAsync(appointment.ScheduleId) ?? throw new EntityNotFoundException("Không tìm thấy lịch phù hợp");
+                var oldSchedule = appointment.Schedule;
                 oldSchedule.IsAvailable = true;
                 _unitOfWork.Schedules.Update(oldSchedule);
             }

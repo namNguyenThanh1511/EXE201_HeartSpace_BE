@@ -1,5 +1,6 @@
 ﻿using HeartSpace.Application.Services.UserService.DTOs;
 using HeartSpace.Domain.Entities;
+using HeartSpace.Domain.RequestFeatures;
 
 namespace HeartSpace.Application.Services.UserService
 {
@@ -13,6 +14,7 @@ namespace HeartSpace.Application.Services.UserService
         Task UpdateUserAsync(User user);
         Task<UserProfileResponse?> GetUserProfileAsync(Guid userId);
         Task<bool> UpdateUserProfileAsync(Guid userId, UserProfileUpdateDto request);
+        Task<PagedList<UserProfileResponse>> GetAllUserProfileAsync(UserQueryParams queryParams);
 
     }
 }

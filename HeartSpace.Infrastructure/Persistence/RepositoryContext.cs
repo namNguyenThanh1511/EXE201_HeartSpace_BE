@@ -37,6 +37,8 @@ namespace HeartSpace.Infrastructure.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+        public DbSet<Appointment> Appointments { get; set; }
+
 
 
     }

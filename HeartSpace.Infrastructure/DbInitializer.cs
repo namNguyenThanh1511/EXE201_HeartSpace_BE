@@ -27,7 +27,8 @@
                     UserRole = User.Role.Admin,
                     CreatedAt = now,
                     UpdatedAt = now,
-                    DateOfBirth = new DateOnly(1990, 1, 1)
+                    DateOfBirth = new DateOnly(1990, 1, 1),
+                    Gender = true
                 };
 
                 admin.Password = hasher.HashPassword(admin, "123456");

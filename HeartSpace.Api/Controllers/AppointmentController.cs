@@ -34,7 +34,7 @@ namespace HeartSpace.Api.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize(Roles = "Client,Admin")]
+        [Authorize]
         public async Task<ActionResult<ApiResponse>> UpdateAppointment(Guid id, [FromBody] AppointmentUpdateRequest request)
         {
             var result = await _appointmentService.UpdateAppointmentAsync(id, request);

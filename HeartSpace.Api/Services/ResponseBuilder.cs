@@ -6,14 +6,15 @@ namespace HeartSpace.Api.Services
     public static class ResponseBuilder
     {
         // Success responses
-        public static ApiResponse<T> SuccessWithData<T>(T data, string message = "Thao tác thành công", int code = 200)
+        public static ApiResponse<T> SuccessWithData<T>(T data, string message = "Thao tác thành công", int code = 200, object? metaData = null)
         {
             return new ApiResponse<T>
             {
                 Status = "success",
                 Data = data,
                 Message = message,
-                Code = code
+                Code = code,
+                MetaData = metaData
             };
         }
 

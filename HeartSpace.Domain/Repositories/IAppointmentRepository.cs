@@ -8,5 +8,6 @@ namespace HeartSpace.Domain.Repositories
         Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date);
         Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(Guid userId);
         Task<IEnumerable<Appointment>> GetPastAppointmentsAsync(Guid userId);
+        Task<Appointment?> GetByIdWithScheduleAsync(Guid id);
     }
 }

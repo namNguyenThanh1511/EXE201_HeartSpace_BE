@@ -1,6 +1,7 @@
 ﻿using HeartSpace.Domain.Entities;
 using HeartSpace.Domain.Repositories;
 using HeartSpace.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace HeartSpace.Infrastructure.Repositories
 {
@@ -27,6 +28,13 @@ namespace HeartSpace.Infrastructure.Repositories
         public Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(Guid userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Appointment?> GetByIdWithScheduleAsync(Guid id)
+        {
+            return await _context.Appointments
+                .Include(a => a.Schedule)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
     }
 }

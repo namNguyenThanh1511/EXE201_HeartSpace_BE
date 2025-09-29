@@ -2,6 +2,7 @@
 using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.ScheduleService.DTOs;
 using HeartSpace.Application.Services.UserService;
+using HeartSpace.Domain.RequestFeatures;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,10 +29,10 @@ namespace HeartSpace.Api.Controllers
         }
 
         [HttpGet("consultant/{consultantId}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ScheduleResponse>>>> GetSchedulesByConsultantId(Guid consultantId)
+        public async Task<ActionResult<ApiResponse<PagedList<ScheduleResponse>>>> GetSchedulesByConsultantId(Guid consultantId, [FromQuery] ScheduleQueryParams queryParams)
         {
 
-            var result = await _scheduleService.GetSchedulesByConsultantIdAsync(consultantId);
+            var result = await _scheduleService.GetSchedulesByConsultantIdAsync(consultantId, queryParams);
             return Ok(result, "Get schedules successfully");
         }
 
