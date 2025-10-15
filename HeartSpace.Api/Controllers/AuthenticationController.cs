@@ -30,6 +30,17 @@ namespace HeartSpace.Api.Controllers
             return Created("Đăng ký tài khoản thành công");
         }
 
+        [HttpPost("register/consultant")]
+        public async Task<ActionResult<ApiResponse>> RegisterConsultant([FromBody] RegisterConsultantRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationError("Dữ liệu không hợp lệ");
+            }
+            await _authService.RegisterConsultantAsync(request);
+            return Created("Đăng ký tài khoản thành công");
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult<ApiResponse<TokenResponse>>> Login([FromBody] UserLoginDto userLoginDto)
         {

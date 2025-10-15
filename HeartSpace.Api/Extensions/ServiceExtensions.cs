@@ -2,6 +2,7 @@
 using HeartSpace.Application.Configuration;
 using HeartSpace.Application.Services.AppointmentService;
 using HeartSpace.Application.Services.AuthService;
+using HeartSpace.Application.Services.ConsultantService;
 using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.TokenService;
 using HeartSpace.Application.Services.UserService;
@@ -29,9 +30,12 @@ namespace HeartSpace.Api.Extensions
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             // ✅ Register repositories first
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IConsultantProfileRepository, ConsultantProfileRepository>();
+            services.AddScoped<IConsultantConsultingRepository, ConsultantConsultingRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
 
             // ✅ Then UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -43,6 +47,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IConsultantService, ConsultantService>();
 
 
         }
@@ -136,11 +141,8 @@ namespace HeartSpace.Api.Extensions
         {
             using (var scope = builder.ApplicationServices.CreateScope())
             {
-                await DbInitializer.SeedUsersAsync(scope.ServiceProvider);
+                await DbInitializer.SeedAsync(scope.ServiceProvider);
             }
         }
-
-
-
     }
 }

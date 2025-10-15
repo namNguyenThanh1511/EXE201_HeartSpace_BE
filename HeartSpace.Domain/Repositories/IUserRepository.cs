@@ -10,5 +10,11 @@ namespace HeartSpace.Domain.Repositories
         Task<User?> GetUserByIdentifierAsync(string identifier);
         Task<User?> GetUserByPhoneNumberAsync(string phone);
 
+        Task<User?> GetByIdWithProfileAsync(Guid id);
+
+        Task<IEnumerable<User>> GetAllActiveConsultantsAsync();
+
+        IQueryable<User> GetActiveConsultantsQueryable();
+
     }
 }

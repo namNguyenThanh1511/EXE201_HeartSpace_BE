@@ -13,6 +13,7 @@ namespace HeartSpace.Application.Extensions
             {
                 Username = userCreationDto.Username,
                 Password = userCreationDto.Password,
+                Bio = userCreationDto.Bio,
                 Email = userCreationDto.Email,
                 PhoneNumber = userCreationDto.PhoneNumber,
                 Identifier = userCreationDto.Identifier ?? null,
@@ -37,6 +38,7 @@ namespace HeartSpace.Application.Extensions
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Username = user.Username,
+                Bio = user.Bio,
                 DateOfBirth = user.DateOfBirth.ToString() ?? null,
                 Identifier = user.Identifier ?? null,
                 Avatar = user.Avatar,
@@ -47,11 +49,28 @@ namespace HeartSpace.Application.Extensions
                 Age = age,
                 Gender = user.Gender.Value,
                 IsAdult = age >= 18,
+                ConsultantInfo = user.ConsultantProfile != null ? new ConsultantDetailResponse
+                {
+                    Specialization = user.ConsultantProfile.Specialization,
+                    ExperienceYears = user.ConsultantProfile.ExperienceYears,
+                    HourlyRate = user.ConsultantProfile.HourlyRate,
+                    // 🧩 Lấy thông tin từ bảng trung gian
+                    ConsultingIn = user.ConsultantConsultings
+                    .Where(cc => cc.Consulting != null)
+                    .Select(cc => new ConsultingsResponse
+                    {
+                        Id = cc.Consulting.Id.ToString(),
+                        Name = cc.Consulting.Name,
+                        Description = cc.Consulting.Description
+                    })
+                    .ToList()
+                } : null,
 
 
                 //AvatarUrl = BuildAvatarUrl(user.Avatar, baseAvatarUrl)
             };
         }
+
 
 
 

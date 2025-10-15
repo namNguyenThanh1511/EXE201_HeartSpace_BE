@@ -22,6 +22,8 @@ namespace HeartSpace.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
             modelBuilder.ApplyConfiguration(new ScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
+            modelBuilder.ApplyConfiguration(new ConsultingConfiguration());
+            modelBuilder.ApplyConfiguration(new ConsultantConsultingConfiguration());
 
         }
         public override int SaveChanges()
@@ -38,6 +40,8 @@ namespace HeartSpace.Infrastructure.Persistence
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public DbSet<Appointment> Appointments { get; set; }
+
+        public DbSet<Consulting> Consultings { get; set; }
 
 
 

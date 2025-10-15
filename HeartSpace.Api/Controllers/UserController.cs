@@ -21,12 +21,12 @@ namespace HeartSpace.Api.Controllers
         public async Task<ActionResult<ApiResponse<UserProfileResponse?>>> GetProfile()
         {
             // Get user ID from JWT token
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-            {
-                return BadRequest<UserProfileResponse>("invalid user token", null);
-            }
-            var profile = await _userService.GetUserProfileAsync(userId);
+            //var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            //if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            //{
+            //    return BadRequest<UserProfileResponse>("invalid user token", null);
+            //}
+            var profile = await _userService.GetUserProfileAsync();
 
             return Ok(profile, "Get profile successfully");
         }

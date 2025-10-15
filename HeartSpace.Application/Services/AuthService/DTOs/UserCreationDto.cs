@@ -18,6 +18,8 @@ namespace HeartSpace.Application.Services.AuthService.DTOs
         [VietnamPhoneRegex]
         public string? PhoneNumber { get; set; }
 
+        public string Bio { get; set; }
+
         [Required(ErrorMessage = "Tên đăng nhập không được để trống")]
         [RegularExpression(@"^[A-Za-z][A-Za-z0-9]{4,}$",
             ErrorMessage = "Tên đăng nhập phải có ít nhất 5 ký tự, chỉ chứa chữ cái và số, bắt đầu bằng chữ cái")]

@@ -3,10 +3,9 @@
     public class ConsultantProfile
     {
         public Guid Id { get; set; }
-        public string Bio { get; set; } = string.Empty;
         public string Specialization { get; set; } = string.Empty;
         public int ExperienceYears { get; set; }
-        public decimal HourlyRate { get; set; }
+        public decimal? HourlyRate { get; set; }
         public string? Certifications { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }

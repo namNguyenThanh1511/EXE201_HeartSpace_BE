@@ -12,12 +12,14 @@ namespace HeartSpace.Application.Services.UserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUserRepository _userRepository;
 
 
-        public UserService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        public UserService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IUserRepository userRepository)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _userRepository = userRepository;
         }
         public async Task<User> FindUserByEmailAsync(string email)
         {
@@ -37,18 +39,28 @@ namespace HeartSpace.Application.Services.UserService
             return await _unitOfWork.Users.GetUserByIdentifierAsync(id);
         }
 
-        public async Task<UserProfileResponse?> GetUserProfileAsync(Guid userId)
+        public async Task<UserProfileResponse?> GetUserProfileAsync()
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            (string userId, string role) = _currentUserService.GetCurrentUser();
+
+            User? user;
+            if (role == User.Role.Consultant.ToString())
+            {
+                user = await _unitOfWork.Users.GetByIdWithProfileAsync(Guid.Parse(userId));
+            }
+            else
+            {
+                user = await _unitOfWork.Users.GetByIdAsync(Guid.Parse(userId));
+            }
 
             if (user == null)
-                return null;
+                throw new EntityNotFoundException("User not found");
 
-            // Check if user can access their profile (business rule)
-            user.CheckCanLogin(); // This will throw if user is inactive
+            user.CheckCanLogin();
 
             return user.ToProfileResponse();
         }
+
 
         public async Task<User> FindUserByPhonenumberAsync(string phonenumber)
         {

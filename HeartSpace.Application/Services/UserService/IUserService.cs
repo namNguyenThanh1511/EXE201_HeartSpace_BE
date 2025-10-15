@@ -12,7 +12,7 @@ namespace HeartSpace.Application.Services.UserService
         Task<User> FindUserByPhonenumberAsync(string phonenumber);
         Task<User> FindUserByIdAsync(string id);
         Task UpdateUserAsync(User user);
-        Task<UserProfileResponse?> GetUserProfileAsync(Guid userId);
+        Task<UserProfileResponse?> GetUserProfileAsync();
         Task<bool> UpdateUserProfileAsync(Guid userId, UserProfileUpdateDto request);
         Task<PagedList<UserProfileResponse>> GetAllUserProfileAsync(UserQueryParams queryParams);
 

@@ -7,6 +7,8 @@ namespace HeartSpace.Application.Services.AuthService
     {
         Task RegisterAsync(UserCreationDto request);
 
+        Task RegisterConsultantAsync(RegisterConsultantRequest request);
+
         Task<TokenResponse> LoginAsync(UserLoginDto request);
 
     }

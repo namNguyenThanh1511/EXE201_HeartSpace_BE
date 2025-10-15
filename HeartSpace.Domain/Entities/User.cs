@@ -7,6 +7,8 @@ namespace HeartSpace.Domain.Entities
         public Guid Id { get; set; }
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Bio { get; set; } = string.Empty;
+        //public short rating { get; set; } = 5;
         public string? PhoneNumber { get; set; }
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
@@ -28,48 +30,18 @@ namespace HeartSpace.Domain.Entities
 
         // Navigation property - NOT a database column
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
-
         public virtual ClientProfile? ClientProfile { get; set; }
-
         public virtual ConsultantProfile? ConsultantProfile { get; set; }
         //consultant schedule
         public virtual ICollection<Schedule> ConsultantSchedules { get; set; } = new List<Schedule>();
         public virtual ICollection<Appointment> ClientAppointments { get; set; } = new List<Appointment>();
         public virtual ICollection<Appointment> ConsultantAppointments { get; set; } = new List<Appointment>();
-
-
-        // Business Logic Methods (không có validation)
-        public void Activate()
-        {
-            if (IsActive)
-                throw new BusinessRuleViolationException("User is already active");
-
-            IsActive = true;
-            UpdatedAt = DateTimeOffset.UtcNow;
-        }
-
-        public void Deactivate()
-        {
-            if (!IsActive)
-                throw new BusinessRuleViolationException("User is already inactive");
-
-            IsActive = false;
-            UpdatedAt = DateTimeOffset.UtcNow;
-        }
-
+        // Many-to-many với Consulting
+        public virtual ICollection<ConsultantConsulting> ConsultantConsultings { get; set; } = new List<ConsultantConsulting>();
         public void CheckCanLogin()
         {
             if (!IsActive)
                 throw new UserInactiveException();
-        }
-
-        public bool IsAdult()
-        {
-            var age = DateTime.Today.Year - DateOfBirth.Value.Year;
-            if (DateOfBirth.Value.DayOfYear > DateTime.Today.DayOfYear)
-                age--;
-
-            return age >= 18;
         }
     }
 }

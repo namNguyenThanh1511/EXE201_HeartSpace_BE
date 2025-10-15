@@ -99,6 +99,93 @@ namespace HeartSpace.Application.Services.AuthService
             await _unitOfWork.SaveAsync();
         }
 
+        public async Task RegisterConsultantAsync(RegisterConsultantRequest request)
+        {
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                // 1️⃣ Kiểm tra trùng thông tin người dùng
+                await ValidateUserUniquenessAsync(new UserCreationDto
+                {
+                    Email = request.Email,
+                    Username = request.Username,
+                    PhoneNumber = request.PhoneNumber
+                });
+
+                // 2️⃣ Chuẩn hóa số điện thoại
+                if (!string.IsNullOrEmpty(request.PhoneNumber))
+                {
+                    request.PhoneNumber = PhoneNumberHelper.NormalizePhoneNumber(request.PhoneNumber);
+                }
+
+                // 3️⃣ Tạo User (chưa có Id vì Id do DB sinh)
+                var consultant = new User
+                {
+                    FullName = request.FullName,
+                    Email = request.Email,
+                    Bio = request.Bio,
+                    Username = request.Username,
+                    Password = _passwordHasher.HashPassword(null!, request.Password),
+                    PhoneNumber = request.PhoneNumber,
+                    DateOfBirth = request.DateOfBirth,
+                    Gender = request.Gender,
+                    UserRole = User.Role.Consultant,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow,
+                };
+
+                // 4️⃣ Lưu user trước để có Id
+                _unitOfWork.Users.Add(consultant);
+                await _unitOfWork.SaveAsync(); // DB sinh Id, EF cập nhật consultant.Id
+
+                // 5️⃣ Tạo ConsultantProfile
+                var profile = new ConsultantProfile
+                {
+                    Specialization = request.Specialization,
+                    ExperienceYears = request.ExperienceYears,
+                    HourlyRate = request.HourlyRate,
+                    Certifications = request.Certifications,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow,
+                    ConsultantId = consultant.Id
+                };
+
+                _unitOfWork.ConsultantProfiles.Add(profile);
+                // hoặc _context.ConsultantProfiles.Add(profile) nếu bạn chưa có repo riêng
+
+                // 6️⃣ Gán các lĩnh vực tư vấn
+                if (request.ConsultingIds != null && request.ConsultingIds.Any())
+                {
+                    var consultantConsultings = request.ConsultingIds.Select(id => new ConsultantConsulting
+                    {
+                        ConsultingId = id,
+                        ConsultantId = consultant.Id
+                    }).ToList();
+
+                    // Nếu có repository riêng thì gọi:
+                    // _unitOfWork.ConsultantConsultings.AddRange(consultantConsultings);
+                    // Hoặc dùng _context trực tiếp:
+                    await _unitOfWork.ConsultantConsultings.AddRangeAsync(consultantConsultings);
+                }
+
+                // 7️⃣ Lưu tất cả phần còn lại
+                await _unitOfWork.SaveAsync();
+
+                // 8️⃣ Commit transaction
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
+
+
+
+
         private async Task ValidateUserUniquenessAsync(UserCreationDto dto)
         {
             // Check email

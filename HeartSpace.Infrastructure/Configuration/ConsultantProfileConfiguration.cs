@@ -13,16 +13,12 @@ namespace HeartSpace.Infrastructure.Configuration
                         .ValueGeneratedOnAdd()
                         .IsRequired();
             builder.HasKey(cp => cp.Id);
-            builder.Property(cp => cp.Bio)
-                .IsRequired()
-                .HasMaxLength(2000);
             builder.Property(cp => cp.Specialization)
                 .IsRequired()
                 .HasMaxLength(255);
             builder.Property(cp => cp.ExperienceYears)
                 .IsRequired();
             builder.Property(cp => cp.HourlyRate)
-                .IsRequired()
                 .HasColumnType("decimal(18,2)");
             builder.Property(cp => cp.Certifications)
                 .HasMaxLength(1000);

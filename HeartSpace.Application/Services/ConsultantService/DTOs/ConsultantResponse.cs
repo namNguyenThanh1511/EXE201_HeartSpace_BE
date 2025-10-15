@@ -1,6 +1,8 @@
-﻿namespace HeartSpace.Application.Services.UserService.DTOs
+﻿using HeartSpace.Application.Services.UserService.DTOs;
+
+namespace HeartSpace.Application.Services.ConsultantService.DTOs
 {
-    public class UserProfileResponse
+    public class ConsultantResponse
     {
         public Guid Id { get; set; }
         public string? FullName { get; set; } = string.Empty;
@@ -9,19 +11,11 @@
         public string? PhoneNumber { get; set; }
         public string? Username { get; set; } = string.Empty;
         public string? DateOfBirth { get; set; }
-        public string? Identifier { get; set; } = string.Empty;
         public string? Avatar { get; set; }
         public string? Role { get; set; } = string.Empty;
         public bool? Gender { get; set; }
         public bool? IsActive { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
-
-        // Computed properties
-        public int? Age { get; set; }
-        public bool IsAdult { get; set; }
-        public string? AvatarUrl { get; set; } = string.Empty;
-
         public ConsultantDetailResponse? ConsultantInfo { get; set; }
     }
 }

@@ -25,5 +25,41 @@ namespace HeartSpace.Infrastructure.Repositories
 
         public async Task<User?> GetUserByPhoneNumberAsync(string phone)
         => await FindByCondition(u => u.PhoneNumber == phone).SingleOrDefaultAsync();
+
+        public async Task<User?> GetByIdWithProfileAsync(Guid id)
+        {
+            return await _context.Users
+                .Include(u => u.ConsultantProfile)
+                .Include(u => u.ConsultantConsultings)
+                    .ThenInclude(u => u.Consulting)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+        public async Task<IEnumerable<User>> GetAllActiveConsultantsAsync()
+        {
+            return await _context.Users
+                .Where(u =>
+                    u.UserRole == User.Role.Consultant &&
+                    u.IsActive &&
+                    !string.IsNullOrEmpty(u.FullName))
+                .Include(u => u.ConsultantProfile)
+                .Include(u => u.ConsultantConsultings)
+                    .ThenInclude(cc => cc.Consulting)
+                .ToListAsync();
+        }
+
+        public IQueryable<User> GetActiveConsultantsQueryable()
+        {
+            return _context.Users
+                .Where(u =>
+                    u.UserRole == User.Role.Consultant &&
+                    u.IsActive &&
+                    !string.IsNullOrEmpty(u.FullName))
+                .Include(u => u.ConsultantProfile)
+                .Include(u => u.ConsultantConsultings)
+                    .ThenInclude(cc => cc.Consulting);
+        }
+
+
+
     }
 }
