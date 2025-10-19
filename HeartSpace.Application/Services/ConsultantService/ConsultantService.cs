@@ -2,8 +2,10 @@
 using HeartSpace.Application.Services.UserService;
 using HeartSpace.Application.Services.UserService.DTOs;
 using HeartSpace.Domain.Entities;
+using HeartSpace.Domain.Exception;
 using HeartSpace.Domain.Repositories;
 using HeartSpace.Domain.RequestFeatures;
+using Microsoft.EntityFrameworkCore;
 
 namespace HeartSpace.Application.Services.ConsultantService
 {
@@ -16,6 +18,9 @@ namespace HeartSpace.Application.Services.ConsultantService
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
         }
+
+
+
         public async Task<PagedList<ConsultantResponse>> GetConsultantsAsync(ConsultantQueryParams queryParams)
         {
 
@@ -102,6 +107,62 @@ namespace HeartSpace.Application.Services.ConsultantService
                 queryParams.PageSize
             );
         }
+
+        public async Task<ConsultantResponse> GetConsultantByIdAsync(Guid id)
+        {
+            // 🔹 1. Tìm user có role là Consultant và có id tương ứng
+            var consultant = await _unitOfWork.Users
+                .GetActiveConsultantsQueryable()
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (consultant == null)
+                throw new EntityNotFoundException($"Consultant with id '{id}' not found.");
+
+            // 🔹 2. Map sang ConsultantResponse (giống cấu trúc trong GetConsultantsAsync)
+            var response = new ConsultantResponse
+            {
+                Id = consultant.Id,
+                FullName = consultant.FullName,
+                Email = consultant.Email,
+                Username = consultant.Username,
+                DateOfBirth = consultant.DateOfBirth.ToString(),
+                PhoneNumber = consultant.PhoneNumber,
+                Bio = consultant.Bio,
+                Avatar = consultant.Avatar,
+                Role = consultant.UserRole.ToString(),
+                IsActive = consultant.IsActive,
+                CreatedAt = consultant.CreatedAt,
+                Gender = consultant.Gender,
+                ConsultantInfo = new ConsultantDetailResponse
+                {
+                    Specialization = consultant.ConsultantProfile?.Specialization ?? string.Empty,
+                    ExperienceYears = consultant.ConsultantProfile?.ExperienceYears ?? 0,
+                    HourlyRate = consultant.ConsultantProfile?.HourlyRate,
+                    Certifications = consultant.ConsultantProfile?.Certifications,
+                    ConsultingIn = consultant.ConsultantConsultings
+                        .Where(cc => cc.Consulting != null)
+                        .Select(cc => new ConsultingsResponse
+                        {
+                            Id = cc.Consulting.Id.ToString(),
+                            Name = cc.Consulting.Name,
+                            Description = cc.Consulting.Description
+                        })
+                        .ToList()
+                },
+                FreeSchedules = consultant.ConsultantSchedules
+                    .Select(schedule => new FreeScheduleResponse
+                    {
+                        Id = schedule.Id,
+                        StartTime = schedule.StartTime,
+                        EndTime = schedule.EndTime,
+                        IsAvailable = schedule.IsAvailable
+                    })
+                    .ToList()
+            };
+
+            return response;
+        }
+
 
 
     }

@@ -22,5 +22,12 @@ namespace HeartSpace.Api.Controllers
             var response = await _consultantService.GetConsultantsAsync(queryParameters);
             return Ok(response, "Get consultants success", response.MetaData);
         }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<ApiResponse<ConsultantResponse>>> GetConsultantById(Guid id)
+        {
+            var consultant = await _consultantService.GetConsultantByIdAsync(id);
+            return Ok(consultant, "Get consultant by id success");
+        }
     }
 }

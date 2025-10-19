@@ -7,6 +7,8 @@ namespace HeartSpace.Application.Services.ConsultantService
     {
         Task<PagedList<ConsultantResponse>> GetConsultantsAsync(ConsultantQueryParams queryParams);
 
+        Task<ConsultantResponse> GetConsultantByIdAsync(Guid id);
+
 
     }
 }
