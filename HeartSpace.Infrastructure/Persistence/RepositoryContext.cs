@@ -43,6 +43,10 @@ namespace HeartSpace.Infrastructure.Persistence
 
         public DbSet<Consulting> Consultings { get; set; }
 
+        public DbSet<ConsultantProfile> ConsultantProfiles { get; set; }
+
+        public DbSet<ConsultantConsulting> ConsultantConsultings { get; set; }
+
 
 
     }

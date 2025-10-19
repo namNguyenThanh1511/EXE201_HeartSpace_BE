@@ -17,7 +17,7 @@ namespace HeartSpace.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedList<ConsultantResponse>>>> GetAppointments([FromQuery] ConsultantQueryParams queryParameters)
+        public async Task<ActionResult<ApiResponse<PagedList<ConsultantResponse>>>> GetConsultants([FromQuery] ConsultantQueryParams queryParameters)
         {
             var response = await _consultantService.GetConsultantsAsync(queryParameters);
             return Ok(response, "Get consultants success", response.MetaData);

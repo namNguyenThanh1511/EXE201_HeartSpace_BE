@@ -17,5 +17,15 @@ namespace HeartSpace.Application.Services.ConsultantService.DTOs
         public bool? IsActive { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public ConsultantDetailResponse? ConsultantInfo { get; set; }
+        public List<FreeScheduleResponse>? FreeSchedules { get; set; }
     }
+    public class FreeScheduleResponse
+    {
+
+        public Guid Id { get; set; }
+        public DateTimeOffset StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
+        public bool IsAvailable { get; set; }
+    }
+
 }

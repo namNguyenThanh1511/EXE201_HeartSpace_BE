@@ -56,7 +56,8 @@ namespace HeartSpace.Infrastructure.Repositories
                     !string.IsNullOrEmpty(u.FullName))
                 .Include(u => u.ConsultantProfile)
                 .Include(u => u.ConsultantConsultings)
-                    .ThenInclude(cc => cc.Consulting);
+                    .ThenInclude(cc => cc.Consulting)
+                .Include(u => u.ConsultantSchedules);
         }
 
 

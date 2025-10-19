@@ -3,6 +3,7 @@ using HeartSpace.Application.Configuration;
 using HeartSpace.Application.Services.AppointmentService;
 using HeartSpace.Application.Services.AuthService;
 using HeartSpace.Application.Services.ConsultantService;
+using HeartSpace.Application.Services.ConsultingService;
 using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.TokenService;
 using HeartSpace.Application.Services.UserService;
@@ -32,6 +33,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IConsultantProfileRepository, ConsultantProfileRepository>();
             services.AddScoped<IConsultantConsultingRepository, ConsultantConsultingRepository>();
+            services.AddScoped<IConsultingRepository, ConsultingRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -48,6 +50,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IConsultantService, ConsultantService>();
+            services.AddScoped<IConsultingService, ConsultingService>();
 
 
         }

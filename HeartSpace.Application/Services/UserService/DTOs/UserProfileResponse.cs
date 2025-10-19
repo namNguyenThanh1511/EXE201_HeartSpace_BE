@@ -7,7 +7,7 @@
         public string? Bio { get; set; } = string.Empty;
         public string? Email { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
-        public string? Username { get; set; } = string.Empty;
+        public string? UserName { get; set; } = string.Empty;
         public string? DateOfBirth { get; set; }
         public string? Identifier { get; set; } = string.Empty;
         public string? Avatar { get; set; }

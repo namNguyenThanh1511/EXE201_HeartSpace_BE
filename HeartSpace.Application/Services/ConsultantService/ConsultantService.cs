@@ -18,11 +18,6 @@ namespace HeartSpace.Application.Services.ConsultantService
         }
         public async Task<PagedList<ConsultantResponse>> GetConsultantsAsync(ConsultantQueryParams queryParams)
         {
-            //(string userId, string role) = _currentUserService.GetCurrentUser();
-
-            // 🔹 1. Chỉ cho phép các role nhất định xem danh sách Consultant
-            //if (role != User.Role.Admin.ToString() && role != User.Role.Client.ToString())
-            //    throw new InsufficientPermissionException("Bạn không có quyền xem danh sách chuyên gia.");
 
             // 🔹 2. Tạo query cơ sở: chỉ lấy user có role là Consultant và active
             IQueryable<User> query = _unitOfWork.Users.GetActiveConsultantsQueryable();
@@ -87,7 +82,15 @@ namespace HeartSpace.Application.Services.ConsultantService
                         Description = cc.Consulting.Description
                     })
                     .ToList()
-                }
+                },
+                FreeSchedules = u.ConsultantSchedules.Select(schedule => new FreeScheduleResponse
+                {
+                    Id = schedule.Id,
+                    StartTime = schedule.StartTime,
+                    EndTime = schedule.EndTime,
+                    IsAvailable = schedule.IsAvailable,
+                }).ToList()
+
 
             }).ToList();
 

@@ -17,7 +17,8 @@ namespace HeartSpace.Infrastructure.Repositories
           IScheduleRepository scheduleRepository,
           IAppointmentRepository appointmentRepository,
           IConsultantProfileRepository consultantProfileRepository,
-          IConsultantConsultingRepository consultantConsultingRepository)
+          IConsultantConsultingRepository consultantConsultingRepository,
+          IConsultingRepository consultingRepository)
         {
             _context = context;
             Users = userRepository;
@@ -26,6 +27,7 @@ namespace HeartSpace.Infrastructure.Repositories
             Appointments = appointmentRepository;
             ConsultantProfiles = consultantProfileRepository;
             ConsultantConsultings = consultantConsultingRepository;
+            Consultings = consultingRepository;
         }
 
         public IUserRepository Users { get; }
@@ -38,6 +40,7 @@ namespace HeartSpace.Infrastructure.Repositories
         public IConsultantProfileRepository ConsultantProfiles { get; }
 
         public IConsultantConsultingRepository ConsultantConsultings { get; }
+        public IConsultingRepository Consultings { get; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {

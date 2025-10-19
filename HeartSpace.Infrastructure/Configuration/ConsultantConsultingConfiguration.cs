@@ -8,6 +8,7 @@ namespace HeartSpace.Infrastructure.Configuration
     {
         public void Configure(EntityTypeBuilder<ConsultantConsulting> builder)
         {
+            builder.ToTable("ConsultantConsultings");
             builder.Property(cc => cc.Id)
                         .ValueGeneratedOnAdd()
                         .IsRequired();
