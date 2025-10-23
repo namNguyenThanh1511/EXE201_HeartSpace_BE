@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserverdocker
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Nam@15112003  # Hoặc dùng secret: ${MSSQL_SA_PASSWORD}
+      - MSSQL_PID=Evaluation
+    ports:
+      - "1433:1433"  # Đóng sau test: comment dòng này
+    networks:
+      - mynetwork
+    volumes:
+      - sql_data:/var/opt/mssql  # Persistent data
+
+  heartspace-api:
+    image: namnt1511/heartspace-api:latest  # Pull từ Hub, thay build
+    container_name: heartspace_api
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production  # Dùng appsettings.Production.json
+      - MSSQL_SA_PASSWORD=Nam@15112003  # Pass cho connection string nếu dùng ${}
+      - JWT_SECRET_KEY=DhftOS5uphK3vmCJQrexST1RsyjZBjXWRgJMFPU4  # Secret JWT
+    ports:
+      - "8080:8080"  # VPS port 8080 map container 8080
+    networks:
+      - mynetwork
+    restart: always  # Tự restart nếu crash
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  sql_data:  # Lưu DB data

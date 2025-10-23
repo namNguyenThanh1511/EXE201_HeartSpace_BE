@@ -29,6 +29,15 @@ namespace HeartSpace.Application.Services.ScheduleService
             if (request.StartTime < DateTimeOffset.UtcNow)
                 throw new InvalidOperationException("Không thể tạo lịch trong quá khứ.");
 
+            var timeCount = (request.EndTime - request.StartTime).TotalMinutes;
+            int price;
+            if (Math.Abs(timeCount - 30) <= 5)
+                price = 60000;
+            else if (Math.Abs(timeCount - 60) <= 5)
+                price = 120000;
+            else
+                throw new InvalidOperationException("Thời lượng không hợp lệ. Chỉ chấp nhận khoảng 30 hoặc 60 phút.");
+
             (string userId, string role) = _currentUserService.GetCurrentUser();
             var currentUserSchedules = await _unitOfWork.Schedules.GetSchedulesByConsultantIdAsync(Guid.Parse(userId));
             bool overlaps = currentUserSchedules.Any(s => request.StartTime < s.EndTime && request.EndTime > s.StartTime);
@@ -39,15 +48,18 @@ namespace HeartSpace.Application.Services.ScheduleService
             {
                 throw new InsufficientPermissionException("Only Consultant and Admin can create schedules.");
             }
+
             var schedule = new Schedule
             {
                 ConsultantId = Guid.Parse(userId),
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
+                Price = price,
                 IsAvailable = true
             };
             schedule = await _unitOfWork.Schedules.AddAsync(schedule);
             await _unitOfWork.SaveAsync();
+
             var response = new ScheduleResponse
             {
                 Id = schedule.Id,

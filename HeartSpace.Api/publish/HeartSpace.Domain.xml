@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HeartSpace.Domain</name>
+    </assembly>
+    <members>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.GetByTokenAsync(System.String)">
+            <summary>
+            Lấy refresh token theo token string
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.GetActiveTokensByUserIdAsync(System.Guid)">
+            <summary>
+            Lấy tất cả token active của user
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.GetAllTokensByUserIdAsync(System.Guid)">
+            <summary>
+            Lấy tất cả token của user (bao gồm revoked)
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.RevokeTokenAsync(System.String)">
+            <summary>
+            Revoke một token cụ thể
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.RevokeAllUserTokensAsync(System.Guid)">
+            <summary>
+            Revoke tất cả token của user
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.RevokeAllUserTokensExceptCurrentAsync(System.Guid,System.String)">
+            <summary>
+            Revoke tất cả token của user trừ token hiện tại
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.CleanupExpiredTokensAsync">
+            <summary>
+            Xóa các token đã hết hạn
+            </summary>
+        </member>
+        <member name="M:HeartSpace.Domain.Repositories.IRefreshTokenRepository.IsTokenValidAsync(System.String)">
+            <summary>
+            Kiểm tra token có hợp lệ không (chưa revoke và chưa hết hạn)
+            </summary>
+        </member>
+    </members>
+</doc>

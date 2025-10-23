@@ -15,7 +15,10 @@ namespace HeartSpace.Infrastructure.Configuration
             builder.HasKey(a => a.Id);
             builder.Property(a => a.Status).HasConversion<string>()
                 .IsRequired();
+            builder.Property(a => a.PaymentStatus).HasConversion<string>()
+                .IsRequired();
             builder.Property(a => a.Notes);
+            builder.Property(a => a.OrderCode).ValueGeneratedOnAdd();
             builder.Property(a => a.CreatedAt)
                 .IsRequired();
             builder.Property(a => a.UpdatedAt)

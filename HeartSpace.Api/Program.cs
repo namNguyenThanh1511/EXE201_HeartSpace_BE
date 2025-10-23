@@ -34,7 +34,7 @@ builder.Services.ConfigureCors();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline. 
-if (app.Environment.IsEnvironment("LocalDocker"))
+if (app.Environment.IsEnvironment("LocalDocker") || app.Environment.IsEnvironment("Production"))
 {
     //migrarte pending 
     using (var scope = app.Services.CreateScope())

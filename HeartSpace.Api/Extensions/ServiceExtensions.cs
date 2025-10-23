@@ -4,6 +4,7 @@ using HeartSpace.Application.Services.AppointmentService;
 using HeartSpace.Application.Services.AuthService;
 using HeartSpace.Application.Services.ConsultantService;
 using HeartSpace.Application.Services.ConsultingService;
+using HeartSpace.Application.Services.PaymentService;
 using HeartSpace.Application.Services.ScheduleService;
 using HeartSpace.Application.Services.TokenService;
 using HeartSpace.Application.Services.UserService;
@@ -37,6 +38,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IPaymentRequestRepository, PaymentRequestRepository>();
 
 
             // ✅ Then UnitOfWork
@@ -51,6 +53,8 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IConsultantService, ConsultantService>();
             services.AddScoped<IConsultingService, ConsultingService>();
+            services.AddScoped<PayOsService>();
+            services.AddScoped<IPaymentService, PaymentService>();
 
 
         }

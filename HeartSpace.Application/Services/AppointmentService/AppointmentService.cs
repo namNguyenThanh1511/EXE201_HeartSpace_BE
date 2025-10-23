@@ -1,10 +1,12 @@
 ﻿using HeartSpace.Application.Extensions;
 using HeartSpace.Application.Services.AppointmentService.DTOs;
+using HeartSpace.Application.Services.PaymentService;
 using HeartSpace.Application.Services.UserService;
 using HeartSpace.Domain.Entities;
 using HeartSpace.Domain.Exception;
 using HeartSpace.Domain.Repositories;
 using HeartSpace.Domain.RequestFeatures;
+using Microsoft.EntityFrameworkCore;
 
 namespace HeartSpace.Application.Services.AppointmentService
 {
@@ -12,10 +14,12 @@ namespace HeartSpace.Application.Services.AppointmentService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
-        public AppointmentService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
+        private readonly IPaymentService _paymentService;
+        public AppointmentService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IPaymentService paymentService)
         {
             _unitOfWork = unitOfWork;
             _currentUserService = currentUserService;
+            _paymentService = paymentService;
         }
 
         public async Task<PagedList<AppointmentResponse>> GetAppointmentsAsync(AppointmentQueryParams searchParams)
@@ -96,6 +100,7 @@ namespace HeartSpace.Application.Services.AppointmentService
             {
                 ScheduleId = request.ScheduleId,
                 ClientId = Guid.Parse(userId),
+                Amount = schedule.Price,
                 ConsultantId = schedule.ConsultantId,
                 Status = AppointmentStatus.Pending,
                 Notes = request.Notes
@@ -189,19 +194,27 @@ namespace HeartSpace.Application.Services.AppointmentService
             if (appointment.Status != AppointmentStatus.Pending)
                 throw new BusinessRuleViolationException("Chỉ có thể chấp nhận yêu cầu lịch hẹn đang chờ");
 
-            appointment.Status = AppointmentStatus.Confirm;
+            appointment.Status = AppointmentStatus.PendingPayment;
+            appointment.PaymentStatus = PaymentStatus.PendingPayment;
+            appointment.PaymentDueDate = appointment.Schedule.StartTime.AddHours(-8);
             appointment.UpdatedAt = DateTimeOffset.UtcNow;
             _unitOfWork.Appointments.Update(appointment);
-
+            appointment.PaymentUrl = await _paymentService.CreatePaymentLink(appointment);
             appointment.Schedule.IsAvailable = false;
             _unitOfWork.Schedules.Update(appointment.Schedule);
             await _unitOfWork.SaveAsync();
+
+            // Schedule Hangfire job cho auto-cancel
+            //BackgroundJob.Schedule<AppointmentService>(x => x.AutoCancelIfNotPaidAsync(appointment.Id), appointment.PaymentDueDate);
+
+            // Notify Client thanh toán
+            //await _notificationService.NotifyClientAsync(appointment.ClientId, "Yêu cầu đã được chấp nhận. Vui lòng thanh toán trước " + appointment.PaymentDueDate);
         }
         private async Task CancelAppointmentAsync(Appointment appointment, string reason)
         {
             // Kiểm tra trạng thái
             if (appointment.Status != AppointmentStatus.Pending &&
-                appointment.Status != AppointmentStatus.Confirm)
+                appointment.Status != AppointmentStatus.PendingPayment)
                 throw new BusinessRuleViolationException("Chỉ có thể hủy lịch hẹn đang chờ hoặc đã xác nhận");
 
 
@@ -231,7 +244,7 @@ namespace HeartSpace.Application.Services.AppointmentService
 
         private async Task CompleteAppointmentAsync(Appointment appointment)
         {
-            if (appointment.Status != AppointmentStatus.Confirm)
+            if (appointment.Status != AppointmentStatus.PendingPayment)
                 throw new BusinessRuleViolationException("Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.");
             if (appointment.Schedule != null && appointment.Schedule.EndTime > DateTimeOffset.UtcNow)
                 throw new BusinessRuleViolationException("Chỉ có thể hoàn thành lịch hẹn sau khi thời gian kết thúc.");
@@ -246,6 +259,20 @@ namespace HeartSpace.Application.Services.AppointmentService
             appointment.UpdatedAt = DateTimeOffset.UtcNow;
             _unitOfWork.Appointments.Update(appointment);
             await _unitOfWork.SaveAsync();
+
+            var commission = appointment.EscrowAmount * 0.7m;  // 70%
+            var paymentRequest = new PaymentRequest
+            {
+                AppointmentId = appointment.Id,
+                RequestAmount = commission,
+                BankAccount = "",  // chờ consultant điền
+                BankName = "",
+                Status = PaymentRequestStatus.Pending
+            };
+            await _unitOfWork.PaymentRequests.AddAsync(paymentRequest);
+            await _unitOfWork.SaveAsync();
+            //await _notificationService.NotifyConsultantAsync(appointment.ConsultantId, "Buổi tư vấn hoàn thành. Bạn có thể yêu cầu rút " + commission + " VNĐ");
+
         }
 
         private async Task RescheduleAppointmentAsync(Appointment appointment, Guid? newScheduleId)
@@ -257,9 +284,9 @@ namespace HeartSpace.Application.Services.AppointmentService
                 throw new BusinessRuleViolationException("Lịch hẹn đã hoàn thành, không thể thay đổi.");
             if (appointment.Status == AppointmentStatus.Cancelled)
                 throw new BusinessRuleViolationException("Lịch hẹn đã bị hủy, không thể thay đổi.");
-            if (appointment.Status == AppointmentStatus.Confirm && appointment.Schedule != null && appointment.Schedule.StartTime <= DateTimeOffset.UtcNow && appointment.Schedule.StartTime.Hour - DateTimeOffset.UtcNow.Hour < 8)
+            if (appointment.Status == AppointmentStatus.PendingPayment && appointment.Schedule != null && appointment.Schedule.StartTime <= DateTimeOffset.UtcNow && appointment.Schedule.StartTime.Hour - DateTimeOffset.UtcNow.Hour < 8)
                 throw new BusinessRuleViolationException("Chỉ có thể thay đổi lịch hẹn đã được xác nhận trước thời gian bắt đầu 8 tiếng");
-            if (appointment.Status == AppointmentStatus.Confirm)
+            if (appointment.Status == AppointmentStatus.PendingPayment)
             {
                 var oldSchedule = appointment.Schedule;
                 oldSchedule.IsAvailable = true;
@@ -283,14 +310,48 @@ namespace HeartSpace.Application.Services.AppointmentService
             //need throw exception with message
             return currentStatus switch
             {
-                AppointmentStatus.Pending => newStatus == AppointmentStatus.Confirm || newStatus == AppointmentStatus.Cancelled,
-                AppointmentStatus.Confirm => newStatus == AppointmentStatus.Completed || newStatus == AppointmentStatus.Cancelled,
+                AppointmentStatus.Pending => newStatus == AppointmentStatus.PendingPayment || newStatus == AppointmentStatus.Cancelled,
+                AppointmentStatus.PendingPayment => newStatus == AppointmentStatus.Completed || newStatus == AppointmentStatus.Cancelled,
                 AppointmentStatus.Completed => false,
                 AppointmentStatus.Cancelled => false,
                 _ => false,
             };
         }
 
+        public async Task<bool> ProcessPayingAppointment(AppointmentPayingRequest request)
+        {
+            // Find the appointment by OrderCode
+            var appointment = await _unitOfWork.Appointments
+                .FindByCondition(a => a.OrderCode == request.OrderCode && !a.IsDeleted)
+                .FirstOrDefaultAsync();
 
+            if (appointment == null)
+                throw new EntityNotFoundException("Không tìm thấy lịch hẹn phù hợp cho giao dịch này.");
+
+            // Only allow payment if appointment is in PendingPayment status
+            if (appointment.Status != AppointmentStatus.PendingPayment)
+                throw new BusinessRuleViolationException("Lịch hẹn không ở trạng thái chờ thanh toán.");
+
+            try
+            {
+                // Update payment status and escrow amount
+                appointment.PaymentStatus = PaymentStatus.Paid;
+                appointment.EscrowAmount = appointment.Amount;
+                appointment.Status = AppointmentStatus.Paid;
+                appointment.UpdatedAt = DateTimeOffset.UtcNow;
+
+                _unitOfWork.Appointments.Update(appointment);
+                await _unitOfWork.SaveAsync();
+
+                // Optionally: Notify consultant or client here
+
+                return true;
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
     }
 }

@@ -160,6 +160,7 @@
 
             // Lấy danh sách Consulting có sẵn
             var consultingIds = context.Consultings.Select(c => c.Id).ToList();
+            decimal hourlyRate = 60000;
 
             // 1️⃣ Consultant 1 - Courtney Henry
             var courtney = new User
@@ -186,7 +187,7 @@
                 ConsultantId = courtney.Id,
                 Specialization = "Environmental Studies",
                 ExperienceYears = 8,
-                HourlyRate = 600000,
+                HourlyRate = hourlyRate,
                 Certifications = "IELTS, MBTI",
                 //Rating = 4.9,
                 //TotalRatings = 70,
@@ -222,7 +223,7 @@
                 ConsultantId = jerome.Id,
                 Specialization = "Process Engineering",
                 ExperienceYears = 12,
-                HourlyRate = 600000,
+                HourlyRate = hourlyRate,
                 Certifications = "TOEIC, Process Engineering",
                 //Rating = 4.9,
                 //TotalRatings = 70,
@@ -258,7 +259,7 @@
                 ConsultantId = jenny.Id,
                 Specialization = "Carbon Reduction",
                 ExperienceYears = 6,
-                HourlyRate = 600000,
+                HourlyRate = hourlyRate,
                 Certifications = "Environmental Leadership, Soft Skills",
                 //Rating = 4.9,
                 //TotalRatings = 70,
@@ -294,7 +295,7 @@
                 ConsultantId = cameron.Id,
                 Specialization = "Biodiversity",
                 ExperienceYears = 10,
-                HourlyRate = 600000,
+                HourlyRate = hourlyRate,
                 Certifications = "Systems Admin, Process Engineer",
                 //Rating = 4.9,
                 //TotalRatings = 70,

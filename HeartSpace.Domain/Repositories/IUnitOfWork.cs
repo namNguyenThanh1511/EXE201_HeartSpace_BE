@@ -16,6 +16,9 @@ namespace HeartSpace.Domain.Repositories
         IConsultantConsultingRepository ConsultantConsultings { get; }
 
         IConsultingRepository Consultings { get; }
+
+        IPaymentRequestRepository PaymentRequests { get; }
+
         // Transaction methods
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task CommitTransactionAsync();
