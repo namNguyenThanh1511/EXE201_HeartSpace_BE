@@ -47,6 +47,8 @@ namespace HeartSpace.Infrastructure.Persistence
 
         public DbSet<ConsultantConsulting> ConsultantConsultings { get; set; }
 
+        public DbSet<Schedule> Schedules { get; set; }
+
 
 
     }

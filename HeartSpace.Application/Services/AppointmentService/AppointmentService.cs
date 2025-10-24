@@ -93,7 +93,23 @@ namespace HeartSpace.Application.Services.AppointmentService
             var schedule = await _unitOfWork.Schedules.GetByIdAsync(request.ScheduleId) ?? throw new EntityNotFoundException("Không tìm thấy lịch phù hợp");
             if (!schedule.IsAvailable)
                 throw new BusinessRuleViolationException("Lịch đã được đặt trước đó.");
+            if (schedule.StartTime <= DateTimeOffset.UtcNow)
+                throw new BusinessRuleViolationException("Không thể đặt lịch hẹn trong quá khứ hoặc trước thời gian hiện tại.");
+
             (string userId, string role) = _currentUserService.GetCurrentUser();
+            var user = await _unitOfWork.Users.GetByIdAsync(Guid.Parse(userId)) ?? throw new EntityNotFoundException("Người dùng hiện tại không hợp lệ");
+            if (userId == schedule.ConsultantId.ToString())
+                throw new BusinessRuleViolationException("Không thể đặt lịch hẹn với chính mình.");
+            Appointment? existingAppointment = await _unitOfWork.Appointments
+                .FindByCondition(a => a.ScheduleId == request.ScheduleId && !a.IsDeleted)
+                .FirstOrDefaultAsync();
+            if (existingAppointment != null && existingAppointment.Status != AppointmentStatus.Cancelled)
+            {
+                if (existingAppointment.ClientId == Guid.Parse(userId))
+                {
+                    throw new BusinessRuleViolationException("Bạn đã đặt lịch hẹn này trước đó.");
+                }
+            }
             if (role != User.Role.Client.ToString())
                 throw new InsufficientPermissionException("Chỉ có khách hàng mới có thể đặt lịch hẹn.");
             var appointment = new Appointment

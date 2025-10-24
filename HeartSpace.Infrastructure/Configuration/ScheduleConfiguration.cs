@@ -8,6 +8,7 @@ namespace HeartSpace.Infrastructure.Configuration
     {
         public void Configure(EntityTypeBuilder<Schedule> builder)
         {
+            builder.ToTable("Schedules");
             builder.HasKey(s => s.Id);
             builder.Property(s => s.Id).ValueGeneratedOnAdd().IsRequired();
             builder.Property(s => s.ConsultantId).IsRequired();

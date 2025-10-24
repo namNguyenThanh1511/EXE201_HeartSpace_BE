@@ -3,6 +3,7 @@
     using HeartSpace.Domain.Entities;
     using HeartSpace.Infrastructure.Persistence;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
 
     public static class DbInitializer
@@ -16,6 +17,7 @@
             await SeedConsultingsAsync(context);
             await SeedUsersAsync(context, hasher);
             await SeedConsultantsAsync(context, hasher);
+            await SeedSchedulesAsync(context);
 
         }
 
@@ -323,6 +325,51 @@
             context.ConsultantConsultings.AddRange(jeromeConsultings);
             context.ConsultantConsultings.AddRange(jennyConsultings);
             context.ConsultantConsultings.AddRange(cameronConsultings);
+
+            await context.SaveChangesAsync();
+        }
+
+        private static async Task SeedSchedulesAsync(RepositoryContext context)
+        {
+            if (context.Schedules.Any()) return;
+
+            var future = DateTimeOffset.UtcNow.AddDays(1);
+
+            // Lấy danh sách consultants đã được seed
+            var consultants = await context.Users
+                .Where(u => u.UserRole == User.Role.Consultant)
+                .ToListAsync();
+
+            // Các độ dài lịch xen kẽ 30 và 60 phút
+            var durations = new[] { 30, 60 };
+            // Offset để tránh trùng lặp thời gian (dù khác consultant nhưng để lịch rõ ràng hơn)
+            var offsets = new[] { 0, 40, 110, 170 }; // phút
+
+            int index = 0;
+            foreach (var consultant in consultants)
+            {
+                var duration = durations[index % durations.Length];
+                var startTime = future.AddMinutes(offsets[index]);
+                var endTime = startTime.AddMinutes(duration);
+                var price = duration switch
+                {
+                    30 => 60000,
+                    60 => 120000,
+                    _ => 0 // Không xảy ra
+                };
+
+                var schedule = new Schedule
+                {
+                    ConsultantId = consultant.Id,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    Price = price,
+                    IsAvailable = true
+                };
+
+                context.Schedules.Add(schedule);
+                index++;
+            }
 
             await context.SaveChangesAsync();
         }

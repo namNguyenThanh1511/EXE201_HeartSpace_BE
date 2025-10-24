@@ -10,6 +10,9 @@
         public Guid ScheduleId { get; set; }
         public Guid ClientId { get; set; }
         public Guid ConsultantId { get; set; }
+        public string? PaymentUrl { get; set; } // URL thanh toán
+        public string? PaymentStatus { get; set; } // Trạng thái thanh toán
+        public DateTimeOffset? PaymentDueDate { get; set; }
 
     }
 }

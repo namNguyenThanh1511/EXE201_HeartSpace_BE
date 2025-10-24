@@ -16,7 +16,12 @@ namespace HeartSpace.Application.Extensions
                 Status = appointment.Status.ToString(),
                 ScheduleId = appointment.ScheduleId,
                 CreatedAt = appointment.CreatedAt,
-                UpdatedAt = appointment.UpdatedAt
+                UpdatedAt = appointment.UpdatedAt,
+                Notes = appointment.Notes ?? string.Empty,
+                PaymentUrl = appointment.PaymentUrl,
+                PaymentStatus = appointment.PaymentStatus.ToString(),
+                PaymentDueDate = appointment.PaymentDueDate
+
             };
         }
 
