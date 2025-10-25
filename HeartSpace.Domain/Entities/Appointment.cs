@@ -11,7 +11,7 @@
         public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         // Thêm payment fields
-        public string? OrderCode { get; set; }  // Mã thanh toán
+        public long OrderCode { get; set; }  // Mã thanh toán
         public string? PaymentUrl { get; set; } = null;  // URL thanh toán 
         public decimal Amount { get; set; } = 0;  // Tổng tiền (từ Schedule: 60k hoặc 120k)
         public decimal EscrowAmount { get; set; } = 0;  // Tiền giữ tạm (full amount khi Paid)

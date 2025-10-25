@@ -49,9 +49,8 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OrderCode")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset?>("PaymentDueDate")
                         .HasColumnType("datetimeoffset");

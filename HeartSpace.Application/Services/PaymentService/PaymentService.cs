@@ -32,17 +32,14 @@ namespace HeartSpace.Application.Services.PaymentService
             var items = new List<ItemData> { item };
 
             // Convert order.Id to long (cải thiện: dùng Guid.ToString() và parse, hoặc dùng timestamp nếu cần unique)
-            if (!long.TryParse(foundAppointment.OrderCode, out var orderCode))
-            {
-                throw new InvalidOperationException("Order ID is not in a valid format for conversion to long.");
-            }
+
 
             var returnUrl = _config.GetSection("PayOS:ReturnUrl").Value;
             var cancelUrl = _config.GetSection("PayOS:CancelUrl").Value;
 
             // Prepare payment data for PayOS  
             var paymentData = new PaymentData(
-                orderCode: orderCode,
+                orderCode: foundAppointment.OrderCode,
                 amount: (int)foundAppointment.Amount,
                 description: $"PAYORDER",
                 items: items,
@@ -65,8 +62,6 @@ namespace HeartSpace.Application.Services.PaymentService
 
         public async Task<string> CreatePaymentLink(Appointment foundAppointment)
         {
-
-
             // Prepare item list for PayOS  
             var item = new ItemData(
                           name: "Appointment",  // Hoặc bỏ named arguments nếu không cần
@@ -75,18 +70,14 @@ namespace HeartSpace.Application.Services.PaymentService
                       );
             var items = new List<ItemData> { item };
 
-            // Convert order.Id to long (cải thiện: dùng Guid.ToString() và parse, hoặc dùng timestamp nếu cần unique)
-            if (!long.TryParse(foundAppointment.OrderCode, out var orderCode))
-            {
-                throw new InvalidOperationException("Order ID is not in a valid format for conversion to long.");
-            }
+
 
             var returnUrl = _config.GetSection("PayOS:ReturnUrl").Value;
             var cancelUrl = _config.GetSection("PayOS:CancelUrl").Value;
 
             // Prepare payment data for PayOS  
             var paymentData = new PaymentData(
-                orderCode: orderCode,
+                orderCode: foundAppointment.OrderCode,
                 amount: (int)foundAppointment.Amount,
                 description: $"PAYORDER",
                 items: items,

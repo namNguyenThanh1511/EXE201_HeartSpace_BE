@@ -76,7 +76,9 @@ namespace HeartSpace.Api.Extensions
 
             options.AddPolicy("AllowHeartSpace", policy =>
             {
-                policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5500", "http://127.0.0.1:5501", "https://b7e30a277c99.ngrok-free.app", "http://127.0.0.1:5500")
+                policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5500", "http://127.0.0.1:5501", "https://b7e30a277c99.ngrok-free.app", "http://127.0.0.1:5500",
+                    "https://75588b973a34.ngrok-free.app",
+                    "https://exe-201-heart-space-fe-bf1w.vercel.app")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

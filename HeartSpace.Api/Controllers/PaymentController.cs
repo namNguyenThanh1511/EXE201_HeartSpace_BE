@@ -60,7 +60,7 @@ namespace HeartSpace.Api.Controllers
 
                         await _appointmentService.ProcessPayingAppointment(new AppointmentPayingRequest
                         {
-                            OrderCode = webhookData.orderCode.ToString(),
+                            OrderCode = webhookData.orderCode,
                         });
                     }
                     else

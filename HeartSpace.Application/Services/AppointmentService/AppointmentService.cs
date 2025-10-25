@@ -121,6 +121,7 @@ namespace HeartSpace.Application.Services.AppointmentService
                 Status = AppointmentStatus.Pending,
                 Notes = request.Notes
             };
+            appointment.OrderCode = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmss"));
             //schedule.IsAvailable = false;
             appointment = await _unitOfWork.Appointments.AddAsync(appointment);
             //_unitOfWork.Schedules.Update(schedule);
@@ -228,6 +229,7 @@ namespace HeartSpace.Application.Services.AppointmentService
         }
         private async Task CancelAppointmentAsync(Appointment appointment, string reason)
         {
+            //thêm trường hợp hủy lịch hẹn nếu khách hàng đã thanh toán => tạo payment request để hoàn tiền cho khách hàng
             // Kiểm tra trạng thái
             if (appointment.Status != AppointmentStatus.Pending &&
                 appointment.Status != AppointmentStatus.PendingPayment)

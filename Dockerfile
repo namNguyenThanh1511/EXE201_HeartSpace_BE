@@ -1,4 +1,4 @@
-# Sử dụng SDK image để build
+# --- BUILD STAGE ---
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
@@ -18,16 +18,17 @@ COPY . .
 WORKDIR "/src/HeartSpace.Api"
 RUN dotnet build "HeartSpace.Api.csproj" -c Release -o /app/build
 
-# Publish app
+# --- PUBLISH STAGE ---
 FROM build AS publish
 RUN dotnet publish "HeartSpace.Api.csproj" -c Release -o /app/publish
 
-# Runtime image
+# --- RUNTIME STAGE ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Expose port (nếu muốn map cổng 8080 trong container)
+# Expose cả HTTP & HTTPS
 EXPOSE 8080
+EXPOSE 443
 
 ENTRYPOINT ["dotnet", "HeartSpace.Api.dll"]

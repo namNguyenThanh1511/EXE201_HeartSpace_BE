@@ -22,7 +22,7 @@ namespace HeartSpace.Api.Controllers
         public async Task<ActionResult<ApiResponse<PagedList<AppointmentResponse>>>> GetAppointments([FromQuery] AppointmentQueryParams queryParameters)
         {
             var response = await _appointmentService.GetAppointmentsAsync(queryParameters);
-            return Ok(response, "Lấy cuộc hẹn thành công");
+            return Ok(response, "Lấy cuộc hẹn thành công", response.MetaData);
         }
 
         [HttpPost]

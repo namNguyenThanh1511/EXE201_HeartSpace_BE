@@ -56,10 +56,10 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-
+app.UseCors("AllowHeartSpace");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowHeartSpace");
+
 
 app.MapControllers();
 

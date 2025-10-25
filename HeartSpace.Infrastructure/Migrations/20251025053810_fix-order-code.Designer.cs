@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HeartSpace.Infrastructure.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20251023122154_fix")]
-    partial class fix
+    [Migration("20251025053810_fix-order-code")]
+    partial class fixordercode
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,15 +52,15 @@ namespace HeartSpace.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OrderCode")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset?>("PaymentDueDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("PaymentStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentTransactionId")
                         .HasColumnType("nvarchar(max)");
@@ -340,7 +340,7 @@ namespace HeartSpace.Infrastructure.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.ToTable("Schedule");
+                    b.ToTable("Schedules", (string)null);
                 });
 
             modelBuilder.Entity("HeartSpace.Domain.Entities.Session", b =>

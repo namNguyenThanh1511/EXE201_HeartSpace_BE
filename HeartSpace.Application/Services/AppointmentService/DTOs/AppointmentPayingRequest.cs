@@ -2,6 +2,6 @@
 {
     public class AppointmentPayingRequest
     {
-        public string OrderCode { get; set; }
+        public long OrderCode { get; set; }
     }
 }
