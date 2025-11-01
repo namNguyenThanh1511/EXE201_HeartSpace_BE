@@ -2,6 +2,7 @@
 using HeartSpace.Domain.Entities;
 using HeartSpace.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -36,14 +37,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline. 
 if (app.Environment.IsEnvironment("LocalDocker") || app.Environment.IsEnvironment("Production"))
 {
-    //migrarte pending 
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
-        //db.Database.EnsureCreated();
-        if (db.Database.GetPendingMigrations().Any()) //only migrate if there are any new migrate file
+
+        try
         {
-            db.Database.Migrate();
+            if (db.Database.GetPendingMigrations().Any())
+            {
+                db.Database.Migrate();
+            }
+        }
+        catch (SqlException ex) when (ex.Number == 2714 || ex.Number == 1801)  // Duplicate object/DB exists
+        {
+            // Log & skip (table/DB đã có)
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("Migration skipped: Object already exists. {Error}", ex.Message);
         }
     }
 }

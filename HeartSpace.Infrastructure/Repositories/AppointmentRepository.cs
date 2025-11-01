@@ -36,5 +36,15 @@ namespace HeartSpace.Infrastructure.Repositories
                 .Include(a => a.Schedule)
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
+
+        public async Task<Appointment?> GetByIdWithDetailsAsync(Guid id)
+        {
+            return await _context.Appointments
+                .Include(a => a.Schedule)
+                .Include(a => a.Client)
+                .Include(a => a.Consultant)
+                .Include(a => a.Session)
+                .FirstOrDefaultAsync(a => a.Id == id && !a.IsDeleted);
+        }
     }
 }

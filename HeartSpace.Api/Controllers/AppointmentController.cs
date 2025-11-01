@@ -25,6 +25,14 @@ namespace HeartSpace.Api.Controllers
             return Ok(response, "Lấy cuộc hẹn thành công", response.MetaData);
         }
 
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<AppointmentResponseDetails>>> GetAppointmentsById(Guid id)
+        {
+            var response = await _appointmentService.GetAppointmentByIdAsync(id);
+            return Ok(response, "Lấy cuộc hẹn thành công");
+        }
+
         [HttpPost]
         [Authorize(Roles = "Client,Admin")]
         public async Task<ActionResult<ApiResponse<AppointmentResponse>>> BookAppointment([FromBody] AppointmentBookingRequest request)

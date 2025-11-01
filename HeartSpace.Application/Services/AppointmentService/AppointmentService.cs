@@ -85,6 +85,72 @@ namespace HeartSpace.Application.Services.AppointmentService
                 searchParams.PageNumber, searchParams.PageSize);
         }
 
+        public async Task<AppointmentResponseDetails> GetAppointmentByIdAsync(Guid id)
+        {
+            var appointment = await _unitOfWork.Appointments.GetByIdWithDetailsAsync(id)
+                ?? throw new EntityNotFoundException("Không tìm thấy lịch hẹn phù hợp");
+
+            // Kiểm tra quyền truy cập
+            (string userId, string role) = _currentUserService.GetCurrentUser();
+            var isOwner = appointment.ClientId == Guid.Parse(userId) || appointment.ConsultantId == Guid.Parse(userId);
+            if (!isOwner && role != User.Role.Admin.ToString())
+                throw new InsufficientPermissionException("Bạn không có quyền xem lịch hẹn này.");
+
+            // Map sang AppointmentResponseDetails
+            var response = new AppointmentResponseDetails
+            {
+                Id = appointment.Id,
+                Status = appointment.Status.ToString(),
+                Notes = appointment.Notes ?? string.Empty,
+                CreatedAt = appointment.CreatedAt,
+                UpdatedAt = appointment.UpdatedAt,
+                ScheduleId = appointment.ScheduleId,
+                ClientId = appointment.ClientId,
+                ConsultantId = appointment.ConsultantId,
+                PaymentUrl = appointment.PaymentUrl,
+                PaymentStatus = appointment.PaymentStatus.ToString(),
+                PaymentDueDate = appointment.PaymentDueDate,
+                ReasonForCancellation = appointment.ReasonForCancellation,
+                Amount = appointment.Amount,
+                EscrowAmount = appointment.EscrowAmount,
+                OrderCode = appointment.OrderCode,
+                Schedule = appointment.Schedule != null ? new DTOs.ScheduleDetails
+                {
+                    Id = appointment.Schedule.Id,
+                    StartTime = appointment.Schedule.StartTime,
+                    EndTime = appointment.Schedule.EndTime,
+                    Price = appointment.Schedule.Price,
+                    IsAvailable = appointment.Schedule.IsAvailable
+                } : null,
+                Client = appointment.Client != null ? new DTOs.UserDetails
+                {
+                    Id = appointment.Client.Id,
+                    FullName = appointment.Client.FullName,
+                    Email = appointment.Client.Email,
+                    PhoneNumber = appointment.Client.PhoneNumber,
+                    Avatar = appointment.Client.Avatar
+                } : null,
+                Consultant = appointment.Consultant != null ? new DTOs.UserDetails
+                {
+                    Id = appointment.Consultant.Id,
+                    FullName = appointment.Consultant.FullName,
+                    Email = appointment.Consultant.Email,
+                    PhoneNumber = appointment.Consultant.PhoneNumber,
+                    Avatar = appointment.Consultant.Avatar
+                } : null,
+                Session = appointment.Session != null ? new DTOs.SessionDetails
+                {
+                    Id = appointment.Session.Id,
+                    Summary = appointment.Session.Summary,
+                    Rating = appointment.Session.Rating,
+                    Feedback = appointment.Session.Feedback,
+                    EndAt = appointment.Session.EndAt
+                } : null
+            };
+
+            return response;
+        }
+
 
 
 

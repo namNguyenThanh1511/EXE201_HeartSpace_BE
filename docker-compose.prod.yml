@@ -27,7 +27,7 @@ services:
       - "8080:8080"  # VPS port 8080 map container 8080
     networks:
       - mynetwork
-    restart: always  # Tự restart nếu crash
+    # restart: always  # Tự restart nếu crash
 
 networks:
   mynetwork:
