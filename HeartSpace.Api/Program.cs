@@ -8,8 +8,37 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
+// ✅ Log môi trường hiện tại
+Console.WriteLine($"🔥 Hosting Environment: {builder.Environment.EnvironmentName}");
 
+// ✅ Log connection string (ẩn mật khẩu để bảo mật)
+var connStr = builder.Configuration.GetConnectionString("HeartSpaceDb");
+if (!string.IsNullOrEmpty(connStr))
+{
+    try
+    {
+        var builderSql = new SqlConnectionStringBuilder(connStr);
+        Console.WriteLine("✅ Using SQL Connection:");
+        Console.WriteLine($"   Server   : {builderSql.DataSource}");
+        Console.WriteLine($"   Database : {builderSql.InitialCatalog}");
+        Console.WriteLine($"   User ID  : {builderSql.UserID}");
+        Console.WriteLine($"   Encrypt  : {builderSql.Encrypt}");
+        Console.WriteLine($"   TrustServerCertificate : {builderSql.TrustServerCertificate}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️  Invalid connection string: {ex.Message}");
+        Console.WriteLine($"   Raw value: {connStr}");
+    }
+}
+else
+{
+    Console.WriteLine("❌ Connection string 'HeartSpaceDb' not found in configuration.");
+}
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

@@ -1,0 +1,9 @@
+Server=tcp:heart-space.database.windows.net,1433;
+Initial Catalog=HeartSpaceDB;
+Persist Security Info=False;
+User ID=namnt;
+Password=Nam@15112003;
+MultipleActiveResultSets=True;
+Encrypt=True;
+TrustServerCertificate=True;
+Connection Timeout=30;
