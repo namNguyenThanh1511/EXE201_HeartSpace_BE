@@ -12,6 +12,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+
 // ✅ Log môi trường hiện tại
 Console.WriteLine($"🔥 Hosting Environment: {builder.Environment.EnvironmentName}");
 
@@ -28,6 +29,8 @@ if (!string.IsNullOrEmpty(connStr))
         Console.WriteLine($"   User ID  : {builderSql.UserID}");
         Console.WriteLine($"   Encrypt  : {builderSql.Encrypt}");
         Console.WriteLine($"   TrustServerCertificate : {builderSql.TrustServerCertificate}");
+
+
     }
     catch (Exception ex)
     {

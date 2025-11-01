@@ -22,6 +22,13 @@ namespace HeartSpace.Api.Middleware
         {
             _logger.LogError(exception, "An error occurred: {Message}", exception.Message);
 
+            if (exception.InnerException != null)
+            {
+                _logger.LogError(exception.InnerException,
+                    "Inner exception: {Message}", exception.InnerException.Message);
+            }
+
+
             var response = exception switch
             {
                 // SPECIFIC Domain Exceptions FIRST (most derived)
@@ -48,7 +55,7 @@ namespace HeartSpace.Api.Middleware
                 BaseApplicationException appEx => ResponseBuilder.Error(appEx.Message, appEx.HttpStatusCode),
 
                 // Fallback for any unexpected exception
-                _ => ResponseBuilder.InternalServerError(exception.Message)
+                _ => ResponseBuilder.InternalServerError($"{exception.Message} | Inner: {exception.InnerException?.Message}")
             };
 
             httpContext.Response.ContentType = "application/json";
