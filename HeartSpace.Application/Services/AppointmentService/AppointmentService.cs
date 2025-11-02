@@ -22,7 +22,7 @@ namespace HeartSpace.Application.Services.AppointmentService
             _paymentService = paymentService;
         }
 
-        public async Task<PagedList<AppointmentResponse>> GetAppointmentsAsync(AppointmentQueryParams searchParams)
+        public async Task<PagedList<AppointmentResponseDetails>> GetAppointmentsAsync(AppointmentQueryParams searchParams)
         {
             // 1. Lấy thông tin người dùng hiện tại
             (string userId, string role) = _currentUserService.GetCurrentUser();
@@ -66,10 +66,12 @@ namespace HeartSpace.Application.Services.AppointmentService
                 query = query.Where(a => a.Status == searchParams.Status.Value);
 
             // 5. Include navigation properties nếu cần
-            //query = query
-            //    .Include(a => a.Client)
-            //    .Include(a => a.Consultant)
-            //    .Include(a => a.Schedule);
+            query = query
+                .Include(a => a.Client)
+                .Include(a => a.Consultant)
+                .Include(a => a.Schedule)
+                .Include(a => a.Session);
+
 
             // 6. Thực hiện phân trang
             var pagedAppointments = await PagedList<Appointment>.ToPagedList(
@@ -79,9 +81,9 @@ namespace HeartSpace.Application.Services.AppointmentService
             );
 
             // 7. Map sang DTO (AppointmentResponse)
-            var result = pagedAppointments.Select(a => a.ToAppointmentResponse()).ToList();
+            var result = pagedAppointments.Select(a => a.ToAppointmentResponseDetails()).ToList();
 
-            return new PagedList<AppointmentResponse>(result, pagedAppointments.Count,
+            return new PagedList<AppointmentResponseDetails>(result, pagedAppointments.Count,
                 searchParams.PageNumber, searchParams.PageSize);
         }
 

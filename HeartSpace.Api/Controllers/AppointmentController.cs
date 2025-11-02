@@ -19,7 +19,7 @@ namespace HeartSpace.Api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<PagedList<AppointmentResponse>>>> GetAppointments([FromQuery] AppointmentQueryParams queryParameters)
+        public async Task<ActionResult<ApiResponse<PagedList<AppointmentResponseDetails>>>> GetAppointments([FromQuery] AppointmentQueryParams queryParameters)
         {
             var response = await _appointmentService.GetAppointmentsAsync(queryParameters);
             return Ok(response, "Lấy cuộc hẹn thành công", response.MetaData);

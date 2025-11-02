@@ -93,7 +93,7 @@ namespace HeartSpace.Application.Services.ConsultantService
                     Id = schedule.Id,
                     StartTime = schedule.StartTime,
                     EndTime = schedule.EndTime,
-                    IsAvailable = schedule.IsAvailable,
+                    IsAvailable = DateTime.UtcNow >= schedule.EndTime ? false : schedule.IsAvailable // Automatically mark past schedules as unavailable
                 }).ToList()
 
 
@@ -155,7 +155,7 @@ namespace HeartSpace.Application.Services.ConsultantService
                         Id = schedule.Id,
                         StartTime = schedule.StartTime,
                         EndTime = schedule.EndTime,
-                        IsAvailable = schedule.IsAvailable
+                        IsAvailable = DateTime.UtcNow >= schedule.EndTime ? false : schedule.IsAvailable // Automatically mark past schedules as unavailable
                     })
                     .ToList()
             };

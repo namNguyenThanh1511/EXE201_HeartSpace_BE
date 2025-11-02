@@ -6,7 +6,7 @@ namespace HeartSpace.Application.Services.AppointmentService
 {
     public interface IAppointmentService
     {
-        Task<PagedList<AppointmentResponse>> GetAppointmentsAsync(AppointmentQueryParams searchParams);
+        Task<PagedList<AppointmentResponseDetails>> GetAppointmentsAsync(AppointmentQueryParams searchParams);
         Task<IEnumerable<Appointment>> GetAppointmentsByUserIdAsync(Guid userId);
         Task<IEnumerable<Appointment>> GetAppointmentsByDateAsync(DateTime date);
         Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(Guid userId);
