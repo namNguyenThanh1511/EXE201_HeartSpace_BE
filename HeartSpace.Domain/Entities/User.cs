@@ -16,6 +16,7 @@ namespace HeartSpace.Domain.Entities
         public string? Identifier { get; set; } = null;
         public string? Avatar { get; set; }
         public bool? Gender { get; set; }
+        public string? MeetingLink { get; set; }
         public Role UserRole { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset CreatedAt { get; set; }

@@ -178,6 +178,7 @@
                 UpdatedAt = now,
                 Gender = false,
                 DateOfBirth = new DateOnly(1991, 5, 12),
+                MeetingLink = "https://meet.google.com/mhh-utmy-kgr",
                 Avatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
             };
             courtney.Password = hasher.HashPassword(courtney, "123456");
@@ -214,6 +215,7 @@
                 UpdatedAt = now,
                 Gender = true,
                 DateOfBirth = new DateOnly(1988, 3, 25),
+                MeetingLink = "https://meet.google.com/ipp-bafa-cux",
                 Avatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
             };
             jerome.Password = hasher.HashPassword(jerome, "123456");
@@ -250,7 +252,9 @@
                 UpdatedAt = now,
                 Gender = false,
                 DateOfBirth = new DateOnly(1993, 7, 4),
+                MeetingLink = "https://meet.google.com/bvc-mjee-hwu",
                 Avatar = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+
             };
             jenny.Password = hasher.HashPassword(jenny, "123456");
             context.Users.Add(jenny);
@@ -286,6 +290,7 @@
                 UpdatedAt = now,
                 Gender = true,
                 DateOfBirth = new DateOnly(1990, 11, 15),
+                MeetingLink = "https://meet.google.com/kpz-gikn-wvb",
                 Avatar = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
             };
             cameron.Password = hasher.HashPassword(cameron, "123456");

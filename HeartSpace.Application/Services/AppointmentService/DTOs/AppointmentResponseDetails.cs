@@ -10,6 +10,7 @@
         public decimal Amount { get; set; }
         public decimal EscrowAmount { get; set; }
         public long OrderCode { get; set; }
+        public string? MeetingLink { get; set; }
     }
 
     public class ScheduleDetails
