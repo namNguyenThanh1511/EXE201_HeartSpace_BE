@@ -155,9 +155,6 @@ namespace HeartSpace.Application.Services.AppointmentService
             return response;
         }
 
-
-
-
         public async Task<AppointmentResponse> CreateAppointmentAsync(AppointmentBookingRequest request)
         {
             var schedule = await _unitOfWork.Schedules.GetByIdAsync(request.ScheduleId) ?? throw new EntityNotFoundException("Không tìm thấy lịch phù hợp");
@@ -332,10 +329,10 @@ namespace HeartSpace.Application.Services.AppointmentService
 
         private async Task CompleteAppointmentAsync(Appointment appointment)
         {
-            if (appointment.Status != AppointmentStatus.PendingPayment)
+            if (appointment.Status == AppointmentStatus.PendingPayment)
                 throw new BusinessRuleViolationException("Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.");
-            if (appointment.Schedule != null && appointment.Schedule.EndTime > DateTimeOffset.UtcNow)
-                throw new BusinessRuleViolationException("Chỉ có thể hoàn thành lịch hẹn sau khi thời gian kết thúc.");
+            //if (appointment.Schedule != null && appointment.Schedule.EndTime > DateTimeOffset.UtcNow)
+            //    throw new BusinessRuleViolationException("Chỉ có thể hoàn thành lịch hẹn sau khi thời gian kết thúc.");
             if (appointment.Status == AppointmentStatus.Completed)
                 throw new BusinessRuleViolationException("Lịch hẹn đã được hoàn thành trước đó.");
             if (appointment.Status == AppointmentStatus.Cancelled)

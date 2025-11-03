@@ -6,6 +6,10 @@
         public Guid Id { get; set; }
         public Guid AppointmentId { get; set; }
         public Appointment Appointment { get; set; }
+
+        public Guid ConsultantId { get; set; }
+        public User Consultant { get; set; }
+
         public decimal RequestAmount { get; set; }  // Hoa hồng 70% (e.g., 42k từ 60k)
         public string BankAccount { get; set; }     // TK ngân hàng Consultant
         public string BankName { get; set; }
