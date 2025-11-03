@@ -1,30 +1,69 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - heart-space
+name: Build, Analyze, and Deploy ASP.NET Core App
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  build:
+  build-analyze:
+    name: Build & SonarQube Analysis
     runs-on: windows-latest
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # cần cho SonarQube để phân tích đầy đủ
 
-      - name: Set up .NET Core
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.x"
 
+      - name: Set up Java (SonarQube needs Java runtime)
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "zulu"
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarQube scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarQube scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
+      - name: Build and Analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"namNguyenThanh1511_EXE201_HeartSpace_BE" /o:"namnguyenthanh1511" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          dotnet build --configuration Release
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Publish app
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
@@ -36,14 +75,15 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
+    name: Deploy to Azure Web App
     runs-on: windows-latest
-    needs: build
+    needs: build-analyze
     permissions:
       id-token: write
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: .net-app
