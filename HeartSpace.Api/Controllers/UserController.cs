@@ -57,15 +57,5 @@ namespace HeartSpace.Api.Controllers
             return Ok(users, "Get all users successfully", users.MetaData);
         }
 
-        [HttpPost("test-workflow")]
-        public ActionResult<ApiResponse> Register()
-        {
-            if (!ModelState.IsValid)
-            {
-                return ValidationError("Dữ liệu không hợp lệ");
-            }
-            return Ok("Test workflow successfully");
-
-        }
     }
 }
