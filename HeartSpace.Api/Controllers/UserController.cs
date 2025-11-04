@@ -56,5 +56,16 @@ namespace HeartSpace.Api.Controllers
             var users = await _userService.GetAllUserProfileAsync(queryParams);
             return Ok(users, "Get all users successfully", users.MetaData);
         }
+
+        [HttpPost("test-workflow")]
+        public ActionResult<ApiResponse> Register()
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationError("Dữ liệu không hợp lệ");
+            }
+            return Ok("Test workflow successfully");
+
+        }
     }
 }
