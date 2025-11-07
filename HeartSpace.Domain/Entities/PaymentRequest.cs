@@ -15,7 +15,7 @@
         public string BankName { get; set; }
         public PaymentRequestStatus Status { get; set; } = PaymentRequestStatus.Pending;
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-        public DateTimeOffset? ProcessedAt { get; set; }
+        public DateTimeOffset? ProcessedAt { get; set; } = DateTimeOffset.UtcNow;
     }
     public enum PaymentRequestStatus
     {

@@ -24,6 +24,7 @@ namespace HeartSpace.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new ConsultingConfiguration());
             modelBuilder.ApplyConfiguration(new ConsultantConsultingConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentRequestConfiguration());
 
         }
         public override int SaveChanges()

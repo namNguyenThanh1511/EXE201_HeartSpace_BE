@@ -39,6 +39,9 @@ namespace HeartSpace.Domain.Entities
         public virtual ICollection<Appointment> ConsultantAppointments { get; set; } = new List<Appointment>();
         // Many-to-many với Consulting
         public virtual ICollection<ConsultantConsulting> ConsultantConsultings { get; set; } = new List<ConsultantConsulting>();
+
+        public virtual ICollection<PaymentRequest> PaymentRequests { get; set; } = new List<PaymentRequest>();
+
         public void CheckCanLogin()
         {
             if (!IsActive)

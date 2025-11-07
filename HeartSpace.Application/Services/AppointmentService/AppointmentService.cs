@@ -339,23 +339,34 @@ namespace HeartSpace.Application.Services.AppointmentService
                 throw new BusinessRuleViolationException("Lịch hẹn đã bị hủy, không thể hoàn thành.");
             if (appointment.Status == AppointmentStatus.Pending)
                 throw new BusinessRuleViolationException("Lịch hẹn đang chờ, không thể hoàn thành.");
-
-            appointment.Status = AppointmentStatus.Completed;
-            appointment.UpdatedAt = DateTimeOffset.UtcNow;
-            _unitOfWork.Appointments.Update(appointment);
-            await _unitOfWork.SaveAsync();
-
-            var commission = appointment.EscrowAmount * 0.7m;  // 70%
-            var paymentRequest = new PaymentRequest
+            try
             {
-                AppointmentId = appointment.Id,
-                RequestAmount = commission,
-                BankAccount = "",  // chờ consultant điền
-                BankName = "",
-                Status = PaymentRequestStatus.Pending
-            };
-            await _unitOfWork.PaymentRequests.AddAsync(paymentRequest);
-            await _unitOfWork.SaveAsync();
+                await _unitOfWork.BeginTransactionAsync();
+                appointment.Status = AppointmentStatus.Completed;
+                appointment.UpdatedAt = DateTimeOffset.UtcNow;
+                _unitOfWork.Appointments.Update(appointment);
+                await _unitOfWork.SaveAsync();
+
+                var commission = appointment.EscrowAmount * 0.7m;  // 70%
+                var paymentRequest = new PaymentRequest
+                {
+                    AppointmentId = appointment.Id,
+                    ConsultantId = appointment.ConsultantId,
+                    RequestAmount = commission,
+                    BankAccount = "",  // chờ consultant điền
+                    BankName = "",
+                    Status = PaymentRequestStatus.Pending
+                };
+                await _unitOfWork.PaymentRequests.AddAsync(paymentRequest);
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+
             //await _notificationService.NotifyConsultantAsync(appointment.ConsultantId, "Buổi tư vấn hoàn thành. Bạn có thể yêu cầu rút " + commission + " VNĐ");
 
         }
