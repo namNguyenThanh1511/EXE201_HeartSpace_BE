@@ -51,5 +51,16 @@ namespace HeartSpace.Api.Controllers
             return Ok("Cập nhật cuộc hẹn thành công");
         }
 
+        [HttpPost("paying")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse>> ProcessPayingAppointment([FromBody] AppointmentPayingRequest request)
+        {
+            var result = await _appointmentService.ProcessPayingAppointment(request);
+            if (!result)
+                return BadRequest("Xử lý thanh toán cuộc hẹn thất bại");
+            return Ok("Xử lý thanh toán cuộc hẹn thành công");
+        }
+
+
     }
 }
