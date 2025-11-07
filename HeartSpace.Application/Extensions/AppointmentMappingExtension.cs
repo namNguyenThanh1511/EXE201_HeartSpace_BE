@@ -56,7 +56,8 @@ namespace HeartSpace.Application.Extensions
                     Rating = appointment.Session.Rating,
                     Feedback = appointment.Session.Feedback,
                     EndAt = appointment.Session.EndAt
-                } : null
+                } : null,
+                MeetingLink = appointment.Status == AppointmentStatus.Paid ? appointment?.Consultant?.MeetingLink : null
             };
         }
 

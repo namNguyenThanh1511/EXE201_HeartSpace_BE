@@ -99,7 +99,7 @@ namespace HeartSpace.Application.Services.ScheduleService
                 Id = s.Id,
                 StartTime = s.StartTime,
                 EndTime = s.EndTime,
-                IsAvailable = s.IsAvailable,
+                IsAvailable = DateTimeOffset.UtcNow < s.StartTime && s.IsAvailable
             }).ToList();
 
             return new PagedList<ScheduleResponse>(scheduleResponses, pagedSchedules.Count, queryParams.PageNumber, queryParams.PageSize);

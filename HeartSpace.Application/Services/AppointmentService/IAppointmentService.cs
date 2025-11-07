@@ -15,6 +15,7 @@ namespace HeartSpace.Application.Services.AppointmentService
         Task<bool> UpdateAppointmentAsync(Guid id, AppointmentUpdateRequest appointment);
         Task<bool> DeleteAppointmentAsync(Guid appointmentId);
         Task<bool> ProcessPayingAppointment(AppointmentPayingRequest request);
+        Task<bool> CancelAppointmentAsync(AppointmentPayingRequest request);
         Task<AppointmentResponseDetails> GetAppointmentByIdAsync(Guid id);
     }
 }

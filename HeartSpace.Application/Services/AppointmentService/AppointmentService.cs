@@ -438,5 +438,47 @@ namespace HeartSpace.Application.Services.AppointmentService
                 throw;
             }
         }
+
+        public async Task<bool> CancelAppointmentAsync(AppointmentPayingRequest request)
+        {
+            // Find the appointment by OrderCode
+            var appointment = await _unitOfWork.Appointments
+                .FindByCondition(a => a.OrderCode == request.OrderCode && !a.IsDeleted)
+                .FirstOrDefaultAsync();
+
+            if (appointment == null)
+                throw new EntityNotFoundException("Không tìm thấy lịch hẹn phù hợp cho giao dịch này.");
+
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                appointment.PaymentStatus = PaymentStatus.Failed;
+                appointment.Status = AppointmentStatus.Cancelled;
+                appointment.PaymentUrl = null;
+                appointment.PaymentDueDate = null;
+                appointment.UpdatedAt = DateTimeOffset.UtcNow;
+                _unitOfWork.Appointments.Update(appointment);
+                var schedule = await _unitOfWork.Schedules.GetByIdAsync(appointment.ScheduleId);
+                if (schedule != null)
+                {
+                    schedule.IsAvailable = true;
+                    schedule.UpdatedAt = DateTimeOffset.UtcNow;
+                    _unitOfWork.Schedules.Update(schedule);
+                }
+
+                await _unitOfWork.SaveAsync();
+
+                // Optionally: Notify consultant or client here
+
+                return true;
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+
+        }
+
     }
 }

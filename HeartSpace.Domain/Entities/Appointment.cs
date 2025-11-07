@@ -46,6 +46,7 @@
         NotPaid,
         PendingPayment,  // Sau Confirm
         Paid,            // Sau thanh toán thành công
+        Failed,         // Thanh toán thất bại
         Refunded,        // Nếu hủy sau Paid
         Withdrawn        // Sau rút hoa hồng
     }
