@@ -314,6 +314,8 @@ namespace HeartSpace.Application.Services.AppointmentService
             // Cho phép hủy
             appointment.Status = AppointmentStatus.Cancelled;
             appointment.ReasonForCancellation = reason;
+            appointment.PaymentUrl = null;
+            appointment.PaymentDueDate = null;
             appointment.UpdatedAt = now;
 
             // Cho phép schedule được đặt lại
