@@ -7,6 +7,7 @@ using HeartSpace.Application.Services.ConsultingService;
 using HeartSpace.Application.Services.PaymentRequestService;
 using HeartSpace.Application.Services.PaymentService;
 using HeartSpace.Application.Services.ScheduleService;
+using HeartSpace.Application.Services.StatisticService;
 using HeartSpace.Application.Services.TokenService;
 using HeartSpace.Application.Services.UserService;
 using HeartSpace.Domain.Repositories;
@@ -57,6 +58,7 @@ namespace HeartSpace.Api.Extensions
             services.AddScoped<PayOsService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IPaymentRequestService, PaymentRequestService>();
+            services.AddScoped<IStatisticService, StatisticService>();
 
 
 

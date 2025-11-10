@@ -18,10 +18,11 @@
             await SeedUsersAsync(context, hasher);
             await SeedConsultantsAsync(context, hasher);
             await SeedSchedulesAsync(context);
+            await SeedAppointmentsAsync(context);
 
         }
 
-        // 🧩 Seed Consulting
+        // 🧩 Seed Consulting    
         private static async Task SeedConsultingsAsync(RepositoryContext context)
         {
             if (context.Consultings.Any()) return;
@@ -159,180 +160,166 @@
             if (context.Users.Any(u => u.UserRole == User.Role.Consultant)) return;
 
             var now = DateTimeOffset.UtcNow;
+            decimal hourlyRate = 20000; // sinh viên mới ra trường, phí thấp
 
             // Lấy danh sách Consulting có sẵn
             var consultingIds = context.Consultings.Select(c => c.Id).ToList();
-            decimal hourlyRate = 60000;
 
-            // 1️⃣ Consultant 1 - Courtney Henry
-            var courtney = new User
+            // 1️⃣ Consultant 1 - Nguyễn Đường Tiểu My (female)
+            var duyen = new User
             {
-                FullName = "Courtney Henry",
-                Email = "courtney@example.com",
+                FullName = "Nguyễn Đường Tiểu My",
+                Email = "myndtse182502@fpt.edu.vn",
                 PhoneNumber = "0123456789",
-                Username = "courtney",
-                Bio = "PhD Researcher at the University of Oxford, Environmental Social Sciences.",
+                Username = "duyen",
+                Bio = "Sinh viên mới ra trường, có thể tư vấn học tập, định hướng ngành nghề và phát triển bản thân.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
                 UpdatedAt = now,
                 Gender = false,
-                DateOfBirth = new DateOnly(1991, 5, 12),
+                DateOfBirth = new DateOnly(2001, 5, 12),
                 MeetingLink = "https://meet.google.com/mhh-utmy-kgr",
-                Avatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+                Avatar = "https://i.postimg.cc/KYM7Cn4c/My.avif?w=150&h=150&fit=crop",
             };
-            courtney.Password = hasher.HashPassword(courtney, "123456");
-            context.Users.Add(courtney);
+            duyen.Password = hasher.HashPassword(duyen, "123456");
+            context.Users.Add(duyen);
             await context.SaveChangesAsync();
 
-            var courtneyProfile = new ConsultantProfile
+            var duyenProfile = new ConsultantProfile
             {
-                ConsultantId = courtney.Id,
-                Specialization = "Environmental Studies",
-                ExperienceYears = 8,
+                ConsultantId = duyen.Id,
+                Specialization = "Học tập & Định hướng ngành nghề",
+                ExperienceYears = 1,
                 HourlyRate = hourlyRate,
-                Certifications = "IELTS, MBTI",
-                //Rating = 4.9,
-                //TotalRatings = 70,
-                //Verified = true,
-
+                Certifications = "Chưa có chứng chỉ chuyên môn",
                 CreatedAt = now,
                 UpdatedAt = now
             };
-            context.ConsultantProfiles.Add(courtneyProfile);
+            context.ConsultantProfiles.Add(duyenProfile);
 
-            // 2️⃣ Consultant 2 - Jerome Bell
-            var jerome = new User
+            // 2️⃣ Consultant 2 - Vũ Bảo (male)
+            var baovinh = new User
             {
-                FullName = "Jerome Bell",
-                Email = "jerome@example.com",
+                FullName = "Vũ Bảo",
+                Email = "baovse150649@fpt.edu.vn",
                 PhoneNumber = "0987654321",
-                Username = "jerome",
-                Bio = "PhD Researcher at the University of Oxford, Environmental Social Sciences.",
+                Username = "baovinh",
+                Bio = "Sinh viên mới ra trường, có thể tư vấn chuyển cấp, thích nghi đại học và quản lý stress.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
                 UpdatedAt = now,
                 Gender = true,
-                DateOfBirth = new DateOnly(1988, 3, 25),
+                DateOfBirth = new DateOnly(2000, 3, 25),
                 MeetingLink = "https://meet.google.com/ipp-bafa-cux",
                 Avatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
             };
-            jerome.Password = hasher.HashPassword(jerome, "123456");
-            context.Users.Add(jerome);
+            baovinh.Password = hasher.HashPassword(baovinh, "123456");
+            context.Users.Add(baovinh);
             await context.SaveChangesAsync();
 
-            var jeromeProfile = new ConsultantProfile
+            var baovinhProfile = new ConsultantProfile
             {
-                ConsultantId = jerome.Id,
-                Specialization = "Process Engineering",
-                ExperienceYears = 12,
+                ConsultantId = baovinh.Id,
+                Specialization = "Chuyển cấp & Thích nghi đại học",
+                ExperienceYears = 1,
                 HourlyRate = hourlyRate,
-                Certifications = "TOEIC, Process Engineering",
-                //Rating = 4.9,
-                //TotalRatings = 70,
-                //Verified = true,
-
+                Certifications = "Chưa có chứng chỉ chuyên môn",
                 CreatedAt = now,
                 UpdatedAt = now
             };
-            context.ConsultantProfiles.Add(jeromeProfile);
+            context.ConsultantProfiles.Add(baovinhProfile);
 
-            // 3️⃣ Consultant 3 - Jenny Wilson
-            var jenny = new User
+            // 3️⃣ Consultant 3 - Cường Thịnh (male)
+            var thinh = new User
             {
-                FullName = "Jenny Wilson",
-                Email = "jenny@example.com",
+                FullName = "Cường Thịnh",
+                Email = "thinhhpcse182037@fpt.edu.vn",
                 PhoneNumber = "0123456788",
-                Username = "jenny",
-                Bio = "Carbon Reduction Expert.",
-                IsActive = true,
-                UserRole = User.Role.Consultant,
-                CreatedAt = now,
-                UpdatedAt = now,
-                Gender = false,
-                DateOfBirth = new DateOnly(1993, 7, 4),
-                MeetingLink = "https://meet.google.com/bvc-mjee-hwu",
-                Avatar = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
-
-            };
-            jenny.Password = hasher.HashPassword(jenny, "123456");
-            context.Users.Add(jenny);
-            await context.SaveChangesAsync();
-
-            var jennyProfile = new ConsultantProfile
-            {
-                ConsultantId = jenny.Id,
-                Specialization = "Carbon Reduction",
-                ExperienceYears = 6,
-                HourlyRate = hourlyRate,
-                Certifications = "Environmental Leadership, Soft Skills",
-                //Rating = 4.9,
-                //TotalRatings = 70,
-                //Verified = true,
-
-                CreatedAt = now,
-                UpdatedAt = now
-            };
-            context.ConsultantProfiles.Add(jennyProfile);
-
-            // 4️⃣ Consultant 4 - Cameron Williamson
-            var cameron = new User
-            {
-                FullName = "Cameron Williamson",
-                Email = "cameron@example.com",
-                PhoneNumber = "0987654320",
-                Username = "cameron",
-                Bio = "Biodiversity Specialist - Developer.",
+                Username = "thinh",
+                Bio = "Sinh viên mới ra trường, tư vấn phát triển bản thân, tư duy tích cực và lộ trình sự nghiệp.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
                 UpdatedAt = now,
                 Gender = true,
-                DateOfBirth = new DateOnly(1990, 11, 15),
-                MeetingLink = "https://meet.google.com/kpz-gikn-wvb",
-                Avatar = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+                DateOfBirth = new DateOnly(2001, 7, 4),
+                MeetingLink = "https://meet.google.com/bvc-mjee-hwu",
+                Avatar = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
             };
-            cameron.Password = hasher.HashPassword(cameron, "123456");
-            context.Users.Add(cameron);
+            thinh.Password = hasher.HashPassword(thinh, "123456");
+            context.Users.Add(thinh);
             await context.SaveChangesAsync();
 
-            var cameronProfile = new ConsultantProfile
+            var thinhProfile = new ConsultantProfile
             {
-                ConsultantId = cameron.Id,
-                Specialization = "Biodiversity",
-                ExperienceYears = 10,
+                ConsultantId = thinh.Id,
+                Specialization = "Phát triển bản thân & Tư duy tích cực",
+                ExperienceYears = 1,
                 HourlyRate = hourlyRate,
-                Certifications = "Systems Admin, Process Engineer",
-                //Rating = 4.9,
-                //TotalRatings = 70,
-                //Verified = false,
-
+                Certifications = "Chưa có chứng chỉ chuyên môn",
                 CreatedAt = now,
                 UpdatedAt = now
             };
-            context.ConsultantProfiles.Add(cameronProfile);
+            context.ConsultantProfiles.Add(thinhProfile);
 
-            // 5️⃣ Gắn lĩnh vực tư vấn (ConsultantConsulting) cho từng người
-            var courtneyConsultings = context.Consultings.Where(c => new[] { "1", "2", "3" }.Contains(c.Id.ToString()))
-                .Select(c => new ConsultantConsulting { ConsultantId = courtney.Id, ConsultingId = c.Id }).ToList();
+            // 4️⃣ Consultant 4 - Hồng Như (female)
+            var nhuvan = new User
+            {
+                FullName = "Hồng Như",
+                Email = "nhuvhss170501@fpt.edu.vn",
+                PhoneNumber = "0987654320",
+                Username = "nhuvan",
+                Bio = "Sinh viên mới ra trường, tư vấn định hướng nghề nghiệp trước khi ra trường và chứng chỉ nâng cao.",
+                IsActive = true,
+                UserRole = User.Role.Consultant,
+                CreatedAt = now,
+                UpdatedAt = now,
+                Gender = false,
+                DateOfBirth = new DateOnly(2000, 11, 15),
+                MeetingLink = "https://meet.google.com/kpz-gikn-wvb",
+                Avatar = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+            };
+            nhuvan.Password = hasher.HashPassword(nhuvan, "123456");
+            context.Users.Add(nhuvan);
+            await context.SaveChangesAsync();
 
-            var jeromeConsultings = context.Consultings.Where(c => new[] { "4", "5" }.Contains(c.Id.ToString()))
-                .Select(c => new ConsultantConsulting { ConsultantId = jerome.Id, ConsultingId = c.Id }).ToList();
+            var nhuvanProfile = new ConsultantProfile
+            {
+                ConsultantId = nhuvan.Id,
+                Specialization = "Định hướng nghề nghiệp & Chứng chỉ nâng cao",
+                ExperienceYears = 1,
+                HourlyRate = hourlyRate,
+                Certifications = "Chưa có chứng chỉ chuyên môn",
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+            context.ConsultantProfiles.Add(nhuvanProfile);
 
-            var jennyConsultings = context.Consultings.Where(c => new[] { "6", "2" }.Contains(c.Id.ToString()))
-                .Select(c => new ConsultantConsulting { ConsultantId = jenny.Id, ConsultingId = c.Id }).ToList();
+            await context.SaveChangesAsync();
 
-            var cameronConsultings = context.Consultings.Where(c => new[] { "7", "4" }.Contains(c.Id.ToString()))
-                .Select(c => new ConsultantConsulting { ConsultantId = cameron.Id, ConsultingId = c.Id }).ToList();
+            // 5️⃣ Gắn lĩnh vực tư vấn (ConsultantConsulting)
+            var duyenConsultings = context.Consultings.Where(c => new[] { "1", "4" }.Contains(c.Id.ToString()))
+                .Select(c => new ConsultantConsulting { ConsultantId = duyen.Id, ConsultingId = c.Id }).ToList();
 
-            context.ConsultantConsultings.AddRange(courtneyConsultings);
-            context.ConsultantConsultings.AddRange(jeromeConsultings);
-            context.ConsultantConsultings.AddRange(jennyConsultings);
-            context.ConsultantConsultings.AddRange(cameronConsultings);
+            var baovinhConsultings = context.Consultings.Where(c => new[] { "2", "3" }.Contains(c.Id.ToString()))
+                .Select(c => new ConsultantConsulting { ConsultantId = baovinh.Id, ConsultingId = c.Id }).ToList();
+
+            var thinhConsultings = context.Consultings.Where(c => new[] { "4", "5" }.Contains(c.Id.ToString()))
+                .Select(c => new ConsultantConsulting { ConsultantId = thinh.Id, ConsultingId = c.Id }).ToList();
+
+            var nhuvanConsultings = context.Consultings.Where(c => new[] { "5", "6" }.Contains(c.Id.ToString()))
+                .Select(c => new ConsultantConsulting { ConsultantId = nhuvan.Id, ConsultingId = c.Id }).ToList();
+
+            context.ConsultantConsultings.AddRange(duyenConsultings);
+            context.ConsultantConsultings.AddRange(baovinhConsultings);
+            context.ConsultantConsultings.AddRange(thinhConsultings);
+            context.ConsultantConsultings.AddRange(nhuvanConsultings);
 
             await context.SaveChangesAsync();
         }
+
 
         private static async Task SeedSchedulesAsync(RepositoryContext context)
         {
@@ -378,6 +365,84 @@
 
             await context.SaveChangesAsync();
         }
+
+        private static async Task SeedAppointmentsAsync(RepositoryContext context)
+        {
+            if (context.Appointments.Any()) return;
+
+            var now = DateTimeOffset.UtcNow;
+
+            // Lấy danh sách client, consultant và schedule đã có
+            var clients = context.Users.Where(u => u.UserRole == User.Role.Client).ToList();
+            var consultants = context.Users.Where(u => u.UserRole == User.Role.Consultant).ToList();
+            var schedules = context.Schedules.Include(s => s.Consultant).ToList();
+
+            var appointments = new List<Appointment>();
+
+            // 1️⃣ Appointment đang chờ xác nhận
+            appointments.Add(new Appointment
+            {
+                ScheduleId = schedules[0].Id,
+                ClientId = clients[0].Id,
+                ConsultantId = schedules[0].ConsultantId,
+                Status = AppointmentStatus.Pending,
+                Amount = schedules[0].Price,
+                Notes = "Tôi muốn tư vấn về định hướng học tập.",
+                CreatedAt = now.AddDays(-1),
+                UpdatedAt = now.AddDays(-1)
+            });
+
+            // 2️⃣ Appointment đã được xác nhận (chờ thanh toán)
+            appointments.Add(new Appointment
+            {
+                ScheduleId = schedules[1].Id,
+                ClientId = clients[1].Id,
+                ConsultantId = schedules[1].ConsultantId,
+                Status = AppointmentStatus.PendingPayment,
+                PaymentStatus = PaymentStatus.PendingPayment,
+                Amount = schedules[1].Price,
+                Notes = "Tôi muốn được tư vấn về thích nghi đại học.",
+                PaymentUrl = "https://payment.example.com/abc123",
+                PaymentDueDate = schedules[1].StartTime.AddHours(-8),
+                CreatedAt = now.AddDays(-2),
+                UpdatedAt = now.AddDays(-2)
+            });
+            schedules[1].IsAvailable = false;
+
+            // 3️⃣ Appointment đã hoàn thành
+            appointments.Add(new Appointment
+            {
+                ScheduleId = schedules[2].Id,
+                ClientId = clients[2].Id,
+                ConsultantId = schedules[2].ConsultantId,
+                Status = AppointmentStatus.Completed,
+                Amount = schedules[2].Price,
+                Notes = "Buổi tư vấn rất hữu ích, cảm ơn bạn!",
+                CreatedAt = now.AddDays(-5),
+                UpdatedAt = now.AddDays(-4)
+            });
+            schedules[2].IsAvailable = false;
+
+            // 4️⃣ Appointment đã bị hủy
+            appointments.Add(new Appointment
+            {
+                ScheduleId = schedules[3].Id,
+                ClientId = clients[3].Id,
+                ConsultantId = schedules[3].ConsultantId,
+                Status = AppointmentStatus.Cancelled,
+                Amount = schedules[3].Price,
+                Notes = "Khách hàng bận việc đột xuất.",
+                ReasonForCancellation = "Không thể tham dự đúng giờ",
+                CreatedAt = now.AddDays(-3),
+                UpdatedAt = now.AddDays(-3)
+            });
+            schedules[3].IsAvailable = true; // hủy nên có thể đặt lại
+
+            await context.Appointments.AddRangeAsync(appointments);
+            context.Schedules.UpdateRange(schedules);
+            await context.SaveChangesAsync();
+        }
+
 
 
     }
