@@ -7,7 +7,7 @@ namespace HeartSpace.Api.Controllers
 {
     [Route("api/payment-requests")]
     [ApiController]
-    public class PaymentRequestController : ControllerBase
+    public class PaymentRequestController : BaseController
     {
         // Controller xử lý PaymentRequest (Consultant rút tiền)
         private readonly IPaymentRequestService _paymentRequestService;
@@ -38,7 +38,7 @@ namespace HeartSpace.Api.Controllers
         {
             paymentRequest.AppointmentId = id;
             var updatedRequest = await _paymentRequestService.UpdatePaymentRequest(paymentRequest);
-            return Ok(updatedRequest);
+            return Ok("Update succeed");
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentRequest(Guid id)
