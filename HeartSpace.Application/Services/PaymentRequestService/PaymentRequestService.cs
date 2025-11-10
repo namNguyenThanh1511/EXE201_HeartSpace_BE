@@ -19,6 +19,7 @@ namespace HeartSpace.Application.Services.PaymentRequestService
             {
                 Id = p.Id,
                 AppointmentId = p.AppointmentId,
+                ConsultantId = p.ConsultantId,
                 RequestAmount = p.RequestAmount,
                 BankAccount = p.BankAccount,
                 BankName = p.BankName,
@@ -35,6 +36,7 @@ namespace HeartSpace.Application.Services.PaymentRequestService
             {
                 Id = paymentRequest.Id,
                 AppointmentId = paymentRequest.AppointmentId,
+                ConsultantId = paymentRequest.ConsultantId,
                 RequestAmount = paymentRequest.RequestAmount,
                 BankAccount = paymentRequest.BankAccount,
                 BankName = paymentRequest.BankName,
@@ -99,6 +101,7 @@ namespace HeartSpace.Application.Services.PaymentRequestService
             {
                 Id = p.Id,
                 AppointmentId = p.AppointmentId,
+                ConsultantId = p.ConsultantId,
                 RequestAmount = p.RequestAmount,
                 BankAccount = p.BankAccount,
                 BankName = p.BankName,
@@ -113,6 +116,7 @@ namespace HeartSpace.Application.Services.PaymentRequestService
             {
                 Id = p.Id,
                 AppointmentId = p.AppointmentId,
+                ConsultantId = p.ConsultantId,
                 RequestAmount = p.RequestAmount,
                 BankAccount = p.BankAccount,
                 BankName = p.BankName,

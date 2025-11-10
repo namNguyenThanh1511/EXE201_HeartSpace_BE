@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HeartSpace.Domain.Entities;
+﻿using HeartSpace.Domain.Entities;
 
 namespace HeartSpace.Application.Services.PaymentRequestService.DTOs
 {
@@ -11,6 +6,7 @@ namespace HeartSpace.Application.Services.PaymentRequestService.DTOs
     {
         public Guid Id { get; set; }
         public Guid AppointmentId { get; set; }
+        public Guid ConsultantId { get; set; }
         public decimal RequestAmount { get; set; }
         public string BankAccount { get; set; }
         public string BankName { get; set; }
