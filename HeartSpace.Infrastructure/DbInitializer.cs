@@ -160,7 +160,7 @@
             if (context.Users.Any(u => u.UserRole == User.Role.Consultant)) return;
 
             var now = DateTimeOffset.UtcNow;
-            decimal hourlyRate = 20000; // sinh viên mới ra trường, phí thấp
+            decimal hourlyRate = 120000; // sinh viên năm 3, phí thấp
 
             // Lấy danh sách Consulting có sẵn
             var consultingIds = context.Consultings.Select(c => c.Id).ToList();
@@ -172,7 +172,7 @@
                 Email = "myndtse182502@fpt.edu.vn",
                 PhoneNumber = "0123456789",
                 Username = "duyen",
-                Bio = "Sinh viên mới ra trường, có thể tư vấn học tập, định hướng ngành nghề và phát triển bản thân.",
+                Bio = "Sinh viên năm 3, có thể tư vấn học tập, định hướng ngành nghề và phát triển bản thân.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
@@ -205,7 +205,7 @@
                 Email = "baovse150649@fpt.edu.vn",
                 PhoneNumber = "0987654321",
                 Username = "baovinh",
-                Bio = "Sinh viên mới ra trường, có thể tư vấn chuyển cấp, thích nghi đại học và quản lý stress.",
+                Bio = "Sinh viên năm 3, có thể tư vấn chuyển cấp, thích nghi đại học và quản lý stress.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
@@ -213,7 +213,7 @@
                 Gender = true,
                 DateOfBirth = new DateOnly(2000, 3, 25),
                 MeetingLink = "https://meet.google.com/ipp-bafa-cux",
-                Avatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+                Avatar = "https://i.postimg.cc/ZYGWD1pK/Bao.png",
             };
             baovinh.Password = hasher.HashPassword(baovinh, "123456");
             context.Users.Add(baovinh);
@@ -238,7 +238,7 @@
                 Email = "thinhhpcse182037@fpt.edu.vn",
                 PhoneNumber = "0123456788",
                 Username = "thinh",
-                Bio = "Sinh viên mới ra trường, tư vấn phát triển bản thân, tư duy tích cực và lộ trình sự nghiệp.",
+                Bio = "Sinh viên năm 3, tư vấn phát triển bản thân, tư duy tích cực và lộ trình sự nghiệp.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
@@ -246,7 +246,7 @@
                 Gender = true,
                 DateOfBirth = new DateOnly(2001, 7, 4),
                 MeetingLink = "https://meet.google.com/bvc-mjee-hwu",
-                Avatar = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+                Avatar = "https://i.postimg.cc/3JzdVzGJ/Thinh.jpg",
             };
             thinh.Password = hasher.HashPassword(thinh, "123456");
             context.Users.Add(thinh);
@@ -271,7 +271,7 @@
                 Email = "nhuvhss170501@fpt.edu.vn",
                 PhoneNumber = "0987654320",
                 Username = "nhuvan",
-                Bio = "Sinh viên mới ra trường, tư vấn định hướng nghề nghiệp trước khi ra trường và chứng chỉ nâng cao.",
+                Bio = "Sinh viên năm 3, tư vấn định hướng nghề nghiệp trước khi ra trường và chứng chỉ nâng cao.",
                 IsActive = true,
                 UserRole = User.Role.Consultant,
                 CreatedAt = now,
@@ -279,7 +279,7 @@
                 Gender = false,
                 DateOfBirth = new DateOnly(2000, 11, 15),
                 MeetingLink = "https://meet.google.com/kpz-gikn-wvb",
-                Avatar = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+                Avatar = "https://i.postimg.cc/MGC5G9g2/Nhu.jpg",
             };
             nhuvan.Password = hasher.HashPassword(nhuvan, "123456");
             context.Users.Add(nhuvan);
@@ -319,6 +319,7 @@
 
             await context.SaveChangesAsync();
         }
+
 
 
         private static async Task SeedSchedulesAsync(RepositoryContext context)

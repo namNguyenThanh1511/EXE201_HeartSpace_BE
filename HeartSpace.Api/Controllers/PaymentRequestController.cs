@@ -1,4 +1,5 @@
-﻿using HeartSpace.Application.Services.PaymentRequestService;
+﻿using HeartSpace.Api.Models;
+using HeartSpace.Application.Services.PaymentRequestService;
 using HeartSpace.Application.Services.PaymentRequestService.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,25 +16,25 @@ namespace HeartSpace.Api.Controllers
             _paymentRequestService = paymentRequestService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetPaymentRequests()
+        public async Task<ActionResult<ApiResponse<List<PaymentRequestResponse>>>> GetPaymentRequests()
         {
             var paymentRequests = await _paymentRequestService.GetPaymentRequests();
             return Ok(paymentRequests);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPaymentRequestById(Guid id)
+        public async Task<ActionResult<ApiResponse<PaymentRequestResponse>>> GetPaymentRequestById(Guid id)
         {
             var paymentRequest = await _paymentRequestService.GetPaymentRequestById(id);
             return Ok(paymentRequest);
         }
         [HttpPost]
-        public async Task<IActionResult> CreatePaymentRequest([FromBody] PaymentRequestRequest paymentRequest)
+        public async Task<ActionResult<ApiResponse>> CreatePaymentRequest([FromBody] PaymentRequestRequest paymentRequest)
         {
             var createdRequest = await _paymentRequestService.CreatePaymentRequest(paymentRequest);
             return CreatedAtAction(nameof(GetPaymentRequestById), new { id = createdRequest.Id }, createdRequest);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePaymentRequest(Guid id, [FromBody] PaymentRequestRequest paymentRequest)
+        public async Task<ActionResult<ApiResponse>> UpdatePaymentRequest(Guid id, [FromBody] PaymentRequestRequest paymentRequest)
         {
             paymentRequest.AppointmentId = id;
             var updatedRequest = await _paymentRequestService.UpdatePaymentRequest(paymentRequest);
@@ -48,13 +49,13 @@ namespace HeartSpace.Api.Controllers
             return NoContent();
         }
         [HttpGet("by-appointment/{appointmentId}")]
-        public async Task<IActionResult> GetPaymentRequestsByAppointmentId(Guid appointmentId)
+        public async Task<ActionResult<ApiResponse<PaymentRequestResponse>>> GetPaymentRequestsByAppointmentId(Guid appointmentId)
         {
             var paymentRequests = await _paymentRequestService.GetPaymentRequestByAppointmentId(appointmentId);
             return Ok(paymentRequests);
         }
         [HttpGet("by-consultant/{consultantId}")]
-        public async Task<IActionResult> GetPaymentRequestsByConsultantId(Guid consultantId)
+        public async Task<ActionResult<ApiResponse<PaymentRequestResponse>>> GetPaymentRequestsByConsultantId(Guid consultantId)
         {
             var paymentRequests = await _paymentRequestService.GetPaymentRequestByConsultantId(consultantId);
             return Ok(paymentRequests);
