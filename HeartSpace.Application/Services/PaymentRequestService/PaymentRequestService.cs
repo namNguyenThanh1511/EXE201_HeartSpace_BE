@@ -23,6 +23,8 @@ namespace HeartSpace.Application.Services.PaymentRequestService
                 RequestAmount = p.RequestAmount,
                 BankAccount = p.BankAccount,
                 BankName = p.BankName,
+                CreatedAt = p.CreatedAt,
+                ProcessedAt = p.ProcessedAt,
             }).ToList();
         }
         public async Task<PaymentRequestResponse> GetPaymentRequestById(Guid id)
@@ -40,6 +42,8 @@ namespace HeartSpace.Application.Services.PaymentRequestService
                 RequestAmount = paymentRequest.RequestAmount,
                 BankAccount = paymentRequest.BankAccount,
                 BankName = paymentRequest.BankName,
+                CreatedAt = paymentRequest.CreatedAt,
+                ProcessedAt = paymentRequest.ProcessedAt,
             };
         }
         public async Task<PaymentRequestResponse> CreatePaymentRequest(PaymentRequestRequest paymentRequest)
@@ -105,6 +109,8 @@ namespace HeartSpace.Application.Services.PaymentRequestService
                 RequestAmount = p.RequestAmount,
                 BankAccount = p.BankAccount,
                 BankName = p.BankName,
+                CreatedAt = p.CreatedAt,
+                ProcessedAt = p.ProcessedAt,
             }).ToList());
 
 
@@ -120,6 +126,8 @@ namespace HeartSpace.Application.Services.PaymentRequestService
                 RequestAmount = p.RequestAmount,
                 BankAccount = p.BankAccount,
                 BankName = p.BankName,
+                CreatedAt = p.CreatedAt,
+                ProcessedAt = p.ProcessedAt,
             }).ToList());
         }
 
