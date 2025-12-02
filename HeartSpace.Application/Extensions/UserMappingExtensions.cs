@@ -47,7 +47,7 @@ namespace HeartSpace.Application.Extensions
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt,
                 Age = age,
-                Gender = user.Gender.Value,
+                Gender = user.Gender != null ? user.Gender.Value : null,
                 IsAdult = age >= 18,
                 ConsultantInfo = user.ConsultantProfile != null ? new ConsultantDetailResponse
                 {

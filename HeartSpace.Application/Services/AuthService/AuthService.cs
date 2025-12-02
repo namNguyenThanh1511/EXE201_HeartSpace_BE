@@ -92,6 +92,7 @@ namespace HeartSpace.Application.Services.AuthService
             userEntity.Password = _passwordHasher.HashPassword(userEntity, userForCreationDto.Password);
             userEntity.UserRole = User.Role.Client;
             userEntity.IsActive = true;
+            userEntity.Gender = userForCreationDto.Gender;
             userEntity.CreatedAt = DateTimeOffset.UtcNow;
             userEntity.UpdatedAt = DateTimeOffset.UtcNow;
 
